@@ -1,0 +1,13 @@
+.venv/
+.tools/
+__pycache__/
+*.pyc
+.state/
+.env
+models/
+firmware/build/
+firmware/managed_components/
+firmware/sdkconfig
+firmware/sdkconfig.old
+firmware/dependencies.lock
+*.wav

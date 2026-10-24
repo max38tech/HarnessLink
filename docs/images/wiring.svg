@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+<rect width="1600" height="1100" fill="#f7f8fa"/>
+<style>text{font-family:DejaVu Sans,sans-serif;fill:#172334}.title{font-size:36px;font-weight:bold}.subtitle{font-size:19px;fill:#596779}.heading{font-size:25px;font-weight:bold}.pin{font-size:21px;font-family:DejaVu Sans Mono,monospace}.small{font-size:17px;fill:#596779}.note{font-size:20px}.wire{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}</style>
+<text x="55" y="65" class="title" text-anchor="start">HarnessLink · USB prototype wiring</text>
+<text x="55" y="101" class="subtitle" text-anchor="start">Match the printed pin names on your boards. Block positions below are logical, not physical header positions.</text>
+<path d="M 60 150 h 42" class="wire" stroke="#db820c"/>
+<text x="114" y="157" class="small" text-anchor="start">3.3V</text>
+<path d="M 240 150 h 42" class="wire" stroke="#cc3746"/>
+<text x="294" y="157" class="small" text-anchor="start">5V</text>
+<path d="M 400 150 h 42" class="wire" stroke="#253342"/>
+<text x="454" y="157" class="small" text-anchor="start">Ground</text>
+<path d="M 610 150 h 42" class="wire" stroke="#247bc1"/>
+<text x="664" y="157" class="small" text-anchor="start">I²S clock</text>
+<path d="M 855 150 h 42" class="wire" stroke="#8954b7"/>
+<text x="909" y="157" class="small" text-anchor="start">I²S word select</text>
+<path d="M 1180 150 h 42" class="wire" stroke="#17856d"/>
+<text x="1234" y="157" class="small" text-anchor="start">I²S data</text>
+<rect x="55" y="265" width="300" height="475" rx="16" fill="#ffffff" stroke="#b8c3d0" stroke-width="2"/>
+<text x="205" y="307" class="heading" text-anchor="middle">I²S microphone</text>
+<text x="205" y="333" class="small" text-anchor="middle">Verify chip + 3.3V rating</text>
+<rect x="600" y="230" width="340" height="615" rx="16" fill="#eaf0f7" stroke="#9cacc0" stroke-width="2"/>
+<text x="770" y="275" class="heading" text-anchor="middle">ESP32-S3</text>
+<text x="770" y="304" class="small" text-anchor="middle">YD-ESP32-23 board</text>
+<rect x="1200" y="265" width="345" height="515" rx="16" fill="#ffffff" stroke="#b8c3d0" stroke-width="2"/>
+<text x="1372" y="307" class="heading" text-anchor="middle">MAX98357A</text>
+<text x="1372" y="333" class="small" text-anchor="middle">I²S speaker amplifier</text>
+<path d="M 355 370 H 600" class="wire" stroke="#db820c"/>
+<circle cx="355" cy="370" r="6" fill="white" stroke="#db820c" stroke-width="3"/>
+<circle cx="600" cy="370" r="6" fill="white" stroke="#db820c" stroke-width="3"/>
+<text x="335" y="377" class="pin" text-anchor="end">VDD</text>
+<text x="620" y="377" class="pin" text-anchor="start">3V3</text>
+<path d="M 355 430 H 600" class="wire" stroke="#253342"/>
+<circle cx="355" cy="430" r="6" fill="white" stroke="#253342" stroke-width="3"/>
+<circle cx="600" cy="430" r="6" fill="white" stroke="#253342" stroke-width="3"/>
+<text x="335" y="437" class="pin" text-anchor="end">GND</text>
+<text x="620" y="437" class="pin" text-anchor="start">GND</text>
+<path d="M 355 550 H 600" class="wire" stroke="#247bc1"/>
+<circle cx="355" cy="550" r="6" fill="white" stroke="#247bc1" stroke-width="3"/>
+<circle cx="600" cy="550" r="6" fill="white" stroke="#247bc1" stroke-width="3"/>
+<text x="335" y="557" class="pin" text-anchor="end">SCK</text>
+<text x="620" y="557" class="pin" text-anchor="start">GPIO4</text>
+<path d="M 355 610 H 600" class="wire" stroke="#8954b7"/>
+<circle cx="355" cy="610" r="6" fill="white" stroke="#8954b7" stroke-width="3"/>
+<circle cx="600" cy="610" r="6" fill="white" stroke="#8954b7" stroke-width="3"/>
+<text x="335" y="617" class="pin" text-anchor="end">WS</text>
+<text x="620" y="617" class="pin" text-anchor="start">GPIO5</text>
+<path d="M 355 670 H 600" class="wire" stroke="#17856d"/>
+<circle cx="355" cy="670" r="6" fill="white" stroke="#17856d" stroke-width="3"/>
+<circle cx="600" cy="670" r="6" fill="white" stroke="#17856d" stroke-width="3"/>
+<text x="335" y="677" class="pin" text-anchor="end">SD</text>
+<text x="620" y="677" class="pin" text-anchor="start">GPIO6</text>
+<path d="M 355 490 H 440 V 430" class="wire" stroke="#253342"/>
+<circle cx="355" cy="490" r="6" fill="white" stroke="#253342" stroke-width="3"/>
+<circle cx="440" cy="430" r="6" fill="#253342"/>
+<text x="335" y="497" class="pin" text-anchor="end">L/R</text>
+<text x="458" y="477" class="small" text-anchor="start">Left</text>
+<text x="458" y="500" class="small" text-anchor="start">channel</text>
+<path d="M 940 370 H 1200" class="wire" stroke="#cc3746"/>
+<circle cx="940" cy="370" r="6" fill="white" stroke="#cc3746" stroke-width="3"/>
+<circle cx="1200" cy="370" r="6" fill="white" stroke="#cc3746" stroke-width="3"/>
+<text x="920" y="377" class="pin" text-anchor="end">5V *</text>
+<text x="1220" y="377" class="pin" text-anchor="start">VIN</text>
+<path d="M 940 430 H 1200" class="wire" stroke="#253342"/>
+<circle cx="940" cy="430" r="6" fill="white" stroke="#253342" stroke-width="3"/>
+<circle cx="1200" cy="430" r="6" fill="white" stroke="#253342" stroke-width="3"/>
+<text x="920" y="437" class="pin" text-anchor="end">GND</text>
+<text x="1220" y="437" class="pin" text-anchor="start">GND</text>
+<path d="M 940 490 H 1200" class="wire" stroke="#247bc1"/>
+<circle cx="940" cy="490" r="6" fill="white" stroke="#247bc1" stroke-width="3"/>
+<circle cx="1200" cy="490" r="6" fill="white" stroke="#247bc1" stroke-width="3"/>
+<text x="920" y="497" class="pin" text-anchor="end">GPIO15</text>
+<text x="1220" y="497" class="pin" text-anchor="start">BCLK</text>
+<path d="M 940 550 H 1200" class="wire" stroke="#8954b7"/>
+<circle cx="940" cy="550" r="6" fill="white" stroke="#8954b7" stroke-width="3"/>
+<circle cx="1200" cy="550" r="6" fill="white" stroke="#8954b7" stroke-width="3"/>
+<text x="920" y="557" class="pin" text-anchor="end">GPIO16</text>
+<text x="1220" y="557" class="pin" text-anchor="start">LRC</text>
+<path d="M 940 610 H 1200" class="wire" stroke="#17856d"/>
+<circle cx="940" cy="610" r="6" fill="white" stroke="#17856d" stroke-width="3"/>
+<circle cx="1200" cy="610" r="6" fill="white" stroke="#17856d" stroke-width="3"/>
+<text x="920" y="617" class="pin" text-anchor="end">GPIO17</text>
+<text x="1220" y="617" class="pin" text-anchor="start">DIN</text>
+<text x="1372" y="680" class="note" text-anchor="middle">SD and GAIN:</text>
+<text x="1372" y="710" class="small" text-anchor="middle">leave at breakout defaults</text>
+<rect x="650" y="732" width="240" height="70" rx="9" fill="#dbe5f0" stroke="#9cacc0" stroke-width="2"/>
+<text x="770" y="762" class="small" text-anchor="middle">BOOT = hold to talk</text>
+<text x="770" y="787" class="small" text-anchor="middle">Onboard button · GPIO0</text>
+<rect x="708" y="822" width="124" height="42" rx="7" fill="#d0d9e5" stroke="#7c8da3" stroke-width="2"/>
+<text x="770" y="850" class="small" text-anchor="middle">USB</text>
+<path d="M 770 865 V 937" class="wire" stroke="#253342"/>
+<rect x="590" y="940" width="360" height="80" rx="16" fill="#ffffff" stroke="#b8c3d0" stroke-width="2"/>
+<text x="770" y="973" class="note" text-anchor="middle">PC USB / USB supply</text>
+<text x="770" y="1000" class="small" text-anchor="middle">Use native USB port for setup</text>
+<text x="1320" y="759" class="small" text-anchor="middle">SPK+</text>
+<text x="1440" y="759" class="small" text-anchor="middle">SPK−</text>
+<path d="M 1320 780 V 900" class="wire" stroke="#cc3746"/>
+<path d="M 1440 780 V 900" class="wire" stroke="#253342"/>
+<circle cx="1320" cy="780" r="6" fill="white" stroke="#cc3746" stroke-width="3"/>
+<circle cx="1440" cy="780" r="6" fill="white" stroke="#253342" stroke-width="3"/>
+<text x="1304" y="849" class="small" text-anchor="end" style="fill:#cc3746">Red</text>
+<text x="1456" y="849" class="small" text-anchor="start" style="fill:#253342">Black</text>
+<rect x="1230" y="900" width="310" height="120" rx="16" fill="#ffffff" stroke="#b8c3d0" stroke-width="2"/>
+<circle cx="1320" cy="900" r="6" fill="white" stroke="#cc3746" stroke-width="3"/>
+<circle cx="1440" cy="900" r="6" fill="white" stroke="#253342" stroke-width="3"/>
+<text x="1385" y="947" class="note" text-anchor="middle">Speaker · 3W max</text>
+<text x="1385" y="979" class="small" text-anchor="middle">Verify 4Ω or 8Ω impedance</text>
+<text x="60" y="800" class="heading" text-anchor="start">Before connecting power</text>
+<text x="60" y="839" class="note" text-anchor="start">* Measure the board’s 5V rail first.</text>
+<text x="60" y="873" class="small" text-anchor="start">  Clone header voltages can differ.</text>
+<text x="60" y="919" class="note" text-anchor="start">Speaker− connects ONLY to amplifier SPK−.</text>
+<text x="60" y="950" class="small" text-anchor="start">It is not GND, despite the black wire.</text>
+<text x="60" y="995" class="note" text-anchor="start">Leave the 18650 disconnected for now.</text>
+<text x="55" y="1070" class="small" text-anchor="start">USB power only  •  Disconnect power while wiring  •  Start with low speaker volume  •  All labeled GND pins share ground</text>
+</svg>

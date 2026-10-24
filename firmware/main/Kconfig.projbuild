@@ -1,0 +1,33 @@
+menu "HarnessLink hardware"
+config HL_MIC_BCLK
+    int "Microphone SCK / BCLK GPIO"
+    default 4
+config HL_MIC_WS
+    int "Microphone WS GPIO"
+    default 5
+config HL_MIC_DATA
+    int "Microphone SD GPIO"
+    default 6
+config HL_MIC_RIGHT
+    bool "Use microphone right channel (L/R tied high)"
+    default n
+config HL_MIC_SHIFT
+    int "Right shift 32-bit microphone samples to PCM16"
+    range 8 24
+    default 16
+config HL_AMP_BCLK
+    int "Amplifier BCLK GPIO"
+    default 15
+config HL_AMP_WS
+    int "Amplifier LRC GPIO"
+    default 16
+config HL_AMP_DATA
+    int "Amplifier DIN GPIO"
+    default 17
+config HL_LED_GPIO
+    int "Onboard WS2812 GPIO (verify board revision)"
+    default 48
+config HL_BOOT_GPIO
+    int "Push-to-talk BOOT GPIO"
+    default 0
+endmenu

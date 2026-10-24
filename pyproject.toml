@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "harnesslink"
+version = "0.1.0"
+description = "A local Wi-Fi voice terminal for Codex"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "websockets>=14,<16",
+  "numpy>=1.26,<3",
+  "faster-whisper>=1.1,<2",
+  "piper-tts>=1.3,<2",
+  "pyserial>=3.5,<4",
+]
+
+[project.scripts]
+harnesslink = "harnesslink.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["bridge"]
