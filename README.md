@@ -52,6 +52,12 @@ Use USB power only for this milestone. There is no confirmed 18650 charging/prot
 circuit among these parts. Do not connect a bare cell to 3V3 or assume the 5V input will
 operate reliably across the cell's voltage range. Battery power is a subsequent design.
 
+### 3D Freeform Copper-Wire Sculpture & Build Guide
+
+To inspect the physical 1:1 millimeter-scale freeform copper-wire standoff build (including the structural `GND` skeleton, parallel rear I²S copper bus, speaker cradle, and 18650 battery + 5V boost counterweight base) from any angle in your browser, open [`docs/model-3d.html`](docs/model-3d.html):
+
+![HarnessLink 3D Copper-Wire Sculpture Viewer](docs/images/sculpture-3d.png)
+
 ## Install and flash
 
 From a normal PC terminal:

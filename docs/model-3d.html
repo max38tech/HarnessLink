@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HarnessLink · 3D Copper-Wire Standoff Sculpture & Build Guide</title>
+  <style>
+    :root {
+      --bg-dark: #0b0e14;
+      --panel-bg: rgba(16, 21, 30, 0.88);
+      --panel-border: rgba(217, 138, 78, 0.28);
+      --copper: #d98a4e;
+      --copper-bright: #f4a86c;
+      --accent: #38bdf8;
+      --text-main: #e5e9f0;
+      --text-muted: #94a3b8;
+      --danger: #f87171;
+      --success: #34d399;
+      --warn: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(217, 138, 78, 0.45) rgba(15, 23, 42, 0.4);
+    }
+
+    *::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 6px;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background: rgba(217, 138, 78, 0.45);
+      border-radius: 6px;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(244, 168, 108, 0.75);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: radial-gradient(circle at 50% 35%, #172030 0%, #090c12 100%);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #canvas-container:active {
+      cursor: grabbing;
+    }
+
+    /* Top Header Bar */
+    .top-bar {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      z-index: 20;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      pointer-events: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #d98a4e, #9a5220);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #0b0e14;
+      font-size: 15px;
+      box-shadow: 0 0 14px rgba(217, 138, 78, 0.4);
+    }
+
+    .brand-title h1 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      color: #fff;
+    }
+
+    .brand-title p {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .camera-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .btn {
+      background: rgba(30, 41, 59, 0.75);
+      color: var(--text-main);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn:hover {
+      background: rgba(51, 65, 85, 0.9);
+      border-color: var(--copper-bright);
+      color: #fff;
+    }
+
+    .btn.active {
+      background: linear-gradient(135deg, rgba(217, 138, 78, 0.28), rgba(180, 95, 35, 0.38));
+      border-color: var(--copper-bright);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(217, 138, 78, 0.25);
+    }
+
+    /* Left Panel: Build Steps & Controls */
+    .left-panel {
+      position: absolute;
+      top: 78px;
+      left: 14px;
+      bottom: 14px;
+      width: 330px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      z-index: 20;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Right Panel: Net Legend, Pin Inspector & Cut List */
+    .right-panel {
+      position: absolute;
+      top: 78px;
+      right: 14px;
+      bottom: 14px;
+      width: 340px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      z-index: 20;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--copper-bright);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .step-item {
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .step-item:hover {
+      border-color: rgba(217, 138, 78, 0.5);
+      background: rgba(30, 41, 59, 0.7);
+    }
+
+    .step-item.active {
+      border-color: var(--copper-bright);
+      background: rgba(217, 138, 78, 0.15);
+    }
+
+    .step-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+
+    .step-item-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.38;
+    }
+
+    .control-group {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-main);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--copper-bright);
+      cursor: pointer;
+    }
+
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    /* Net Filter List */
+    .net-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .net-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 9px;
+      border-radius: 7px;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+    }
+
+    .net-item:hover, .net-item.active {
+      border-color: var(--copper-bright);
+      background: rgba(217, 138, 78, 0.16);
+    }
+
+    .net-swatch-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .net-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      flex-shrink: 0;
+    }
+
+    .net-meta {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    /* Inspector Box */
+    .inspector-box {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 92px;
+    }
+
+    .inspector-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .inspector-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.42;
+    }
+
+    /* Table / Cut list */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    .spec-table th, .spec-table td {
+      text-align: left;
+      padding: 5px 6px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .spec-table th {
+      color: var(--copper-bright);
+      font-weight: 600;
+    }
+
+    .warning-banner {
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 11.2px;
+      line-height: 1.38;
+      color: #fecaca;
+    }
+
+    .warning-banner strong {
+      color: #f87171;
+    }
+
+    /* Floating 3D Pin Callouts */
+    #labels-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .pin-label {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      background: rgba(11, 14, 20, 0.86);
+      border: 1px solid rgba(217, 138, 78, 0.55);
+      color: #f8fafc;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: nowrap;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .pin-label:hover {
+      background: var(--copper);
+      color: #000;
+      font-weight: 700;
+      z-index: 30;
+    }
+
+    /* Bottom Hint Bar */
+    .bottom-bar {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--panel-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--panel-border);
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      z-index: 15;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .bottom-bar span {
+      color: var(--copper-bright);
+      font-weight: 600;
+    }
+
+    .led-pill {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+
+    @media (max-width: 1100px) {
+      .left-panel, .right-panel {
+        width: 270px;
+      }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="labels-container"></div>
+
+  <!-- Top Navigation & Camera Presets -->
+  <header class="top-bar">
+    <div class="brand">
+      <div class="brand-badge">HL</div>
+      <div class="brand-title">
+        <h1>HarnessLink · 3D Freeform Copper-Wire Sculpture</h1>
+        <p>Huy Vector Satellite Style · YD-ESP32-23 + I²S Mic + MAX98357A + Speaker + 18650 Battery (1 unit = 1 mm)</p>
+      </div>
+    </div>
+    <div class="camera-bar">
+      <button class="btn active" data-cam="iso">3D Isometric</button>
+      <button class="btn" data-cam="front">Front (BOOT & Pins)</button>
+      <button class="btn" data-cam="back">Back (Copper Bus)</button>
+      <button class="btn" data-cam="left">Left (I²S Mic Pod)</button>
+      <button class="btn" data-cam="right">Right (MAX98357A)</button>
+      <button class="btn" data-cam="top">Top Down</button>
+      <button class="btn" data-cam="battery">18650 Base</button>
+    </div>
+  </header>
+
+  <!-- Left Panel: Step-by-Step Real-World Assembly & Controls -->
+  <aside class="left-panel">
+    <div>
+      <div class="section-title">
+        <span>View & Mechanical Controls</span>
+        <span id="scale-readout">Scale 1:1 (mm)</span>
+      </div>
+      <div class="control-group">
+        <div class="slider-row">
+          <div class="slider-label">
+            <span>Explode Assembly</span>
+            <span id="explode-val">0%</span>
+          </div>
+          <input type="range" id="explode-slider" min="0" max="100" value="0" />
+        </div>
+        <div class="toggle-grid">
+          <button class="btn active" id="toggle-labels">Pin Labels: ON</button>
+          <button class="btn" id="toggle-rotate">Auto-Spin: OFF</button>
+          <button class="btn active" id="toggle-boost">18650 + 5V Boost</button>
+          <button class="btn" id="toggle-xray">Translucent PCBs</button>
+        </div>
+        <div class="slider-row" style="margin-top:2px;">
+          <div class="slider-label">
+            <span>Simulate Onboard RGB LED (GPIO48)</span>
+          </div>
+          <div class="toggle-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <button class="btn active" data-led="green"><span class="led-pill" style="background:#22c55e;"></span>Ready</button>
+            <button class="btn" data-led="red"><span class="led-pill" style="background:#ef4444;"></span>Rec</button>
+            <button class="btn" data-led="amber"><span class="led-pill" style="background:#f59e0b;"></span>Work</button>
+            <button class="btn" data-led="blue"><span class="led-pill" style="background:#3b82f6;"></span>Speak</button>
+            <button class="btn" data-led="purple"><span class="led-pill" style="background:#a855f7;"></span>Wait</button>
+            <button class="btn" data-led="white"><span class="led-pill" style="background:#ffffff;"></span>Input</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">
+        <span>Step-by-Step Soldering Guide</span>
+        <span id="step-indicator">All 6 Steps</span>
+      </div>
+      <div class="step-list" id="step-list">
+        <div class="step-item active" data-step="0">
+          <div class="step-item-header">
+            <span>All Steps (Complete Sculpture)</span>
+            <span>100%</span>
+          </div>
+          <div class="step-item-desc">Full freeform copper-wire satellite stand with structural GND frame, signal buses, and 18650 battery base.</div>
+        </div>
+        <div class="step-item" data-step="1">
+          <div class="step-item-header">
+            <span>1. Copper Base & 18650 Cradle</span>
+            <span>1.2mm Wire</span>
+          </div>
+          <div class="step-item-desc">Bend 1.2mm (16 AWG) bare copper rod into the 84×58mm base rectangle with twin Ø19mm rear hoops to cradle the 18650 cell.</div>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="step-item-header">
+            <span>2. Spine Risers & YD-ESP32-23</span>
+            <span>GND Frame</span>
+          </div>
+          <div class="step-item-desc">Solder two vertical copper pillars from the base up into ESP32-S3 corner GND pins (L22, R1, R21, R22). Leave 18mm bottom clearance for USB-C.</div>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="step-item-header">
+            <span>3. Left Wing: I²S Microphone Pod</span>
+            <span>GPIO 4/5/6</span>
+          </div>
+          <div class="step-item-desc">Extend a top copper GND arm left at Y=69mm to bridge Mic GND & L/R (Left channel). Solder VDD→3V3, SCK→4, WS→5, SD→6.</div>
+        </div>
+        <div class="step-item" data-step="4">
+          <div class="step-item-header">
+            <span>4. Right Wing: MAX98357A Amp</span>
+            <span>GPIO 15/16/17</span>
+          </div>
+          <div class="step-item-desc">Mount purple amp via corner holes & GND pin on right wing. Route parallel copper bridge behind ESP32-S3 from GPIO 15/16/17 & 5Vin.</div>
+        </div>
+        <div class="step-item" data-step="5">
+          <div class="step-item-header">
+            <span>5. Central Speaker Cradle</span>
+            <span>SPK+ / SPK−</span>
+          </div>
+          <div class="step-item-desc">Seat the 30×40×14mm cavity speaker inside the rear copper basket. Connect Red→SPK+ and Black→SPK− (never connect SPK− to GND!).</div>
+        </div>
+        <div class="step-item" data-step="6">
+          <div class="step-item-header">
+            <span>6. 18650 Battery & 5V Boost Rail</span>
+            <span>Power Bus</span>
+          </div>
+          <div class="step-item-desc">Place 18650 cell in rear rings. Connect B+/B− through a 5V Boost/Charger module + switch to feed the 5Vin rail and copper GND frame.</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Panel: Net Highlighter, Pin Inspector & Real-World Measurements -->
+  <aside class="right-panel">
+    <div>
+      <div class="section-title">
+        <span>Interactive Component / Pin Inspector</span>
+      </div>
+      <div class="inspector-box" id="inspector-box">
+        <div class="inspector-title" id="insp-title">Hover or Click Any Part, Pin, or Wire</div>
+        <div class="inspector-sub" id="insp-desc">
+          Spin the model with left-click drag, pan with right-click drag, and zoom with the scroll wheel. Click any wire net below to isolate its path.
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">
+        <span>Highlight Electrical Nets</span>
+        <span style="cursor:pointer; text-decoration:underline;" id="reset-net">Show All</span>
+      </div>
+      <div class="net-list" id="net-list">
+        <div class="net-item" data-net="GND">
+          <div class="net-swatch-wrap">
+            <span class="net-swatch" style="background:#d98a4e;"></span>
+            <span>Structural Copper GND Skeleton</span>
+          </div>
+          <span class="net-meta">1.2mm Bare Cu</span>
+        </div>
+        <div class="net-item" data-net="3V3">
+          <div class="net-swatch-wrap">
+            <span class="net-swatch" style="background:#f59e0b;"></span>
+            <span>3.3V Mic Power (3V3 → VDD)</span>
+          </div>
+          <span class="net-meta">0.8mm Cu</span>
+        </div>
+        <div class="net-item" data-net="5V">
+          <div class="net-swatch-wrap">
+            <span class="net-swatch" style="background:#ef4444;"></span>
+            <span>5V Power Rail (Boost → 5Vin → VIN)</span>
+          </div>
+          <span class="net-meta">0.8mm Cu</span>
+        </div>
+        <div class="net-item" data-net="I2S_CLK">
+          <div class="net-swatch-wrap">
+            <span class="net-swatch" style="background:#38bdf8;"></span>
+            <span>I²S Clocks (GPIO4→SCK, GPIO15→BCLK)</span>
+          </div>
+          <span class="net-meta">0.8mm Cu</span>
+        </div>
+        <div class="net-item" data-net="I2S_WS">
+          <div class="net-swatch-wrap">
+            <span class="net-swatch" style="background:#a855f7;"></span>
+            <span>I²S Word Select (GPIO5→WS, GPIO16→LRC)</span>
+          </div>
+          <span class="net-meta">0.8mm Cu</span>
+        </div>
+        <div class="net-item" data-net="I2S_DATA">
+          <div class="net-swatch-wrap">
+            <span class="net-swatch" style="background:#10b981;"></span>
+            <span>I²S Data (GPIO6→SD, GPIO17→DIN)</span>
+          </div>
+          <span class="net-meta">0.8mm Cu</span>
+        </div>
+        <div class="net-item" data-net="SPK">
+          <div class="net-swatch-wrap">
+            <span class="net-swatch" style="background:#f43f5e;"></span>
+            <span>Speaker Output (SPK+ Red / SPK− Black)</span>
+          </div>
+          <span class="net-meta">Twisted Pair</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">
+        <span>Pin-to-Pin Copper Wiring Reference</span>
+      </div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Module Pin</th>
+            <th>ESP32-S3 Pin</th>
+            <th>Board Side / Hole</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mic <strong>VDD</strong></td>
+            <td><strong>3V3</strong> (3.3V)</td>
+            <td>Left Row #1 (Top-Left)</td>
+          </tr>
+          <tr>
+            <td>Mic <strong>GND + L/R</strong></td>
+            <td><strong>GND Frame</strong></td>
+            <td>Bridged on Top Cu Bar</td>
+          </tr>
+          <tr>
+            <td>Mic <strong>SCK</strong></td>
+            <td><strong>GPIO 4</strong></td>
+            <td>Left Row #4</td>
+          </tr>
+          <tr>
+            <td>Mic <strong>WS</strong></td>
+            <td><strong>GPIO 5</strong></td>
+            <td>Left Row #5</td>
+          </tr>
+          <tr>
+            <td>Mic <strong>SD</strong></td>
+            <td><strong>GPIO 6</strong></td>
+            <td>Left Row #6</td>
+          </tr>
+          <tr>
+            <td>Amp <strong>BCLK</strong></td>
+            <td><strong>GPIO 15</strong></td>
+            <td>Left Row #8 (Rear Bus)</td>
+          </tr>
+          <tr>
+            <td>Amp <strong>LRC</strong></td>
+            <td><strong>GPIO 16</strong></td>
+            <td>Left Row #9 (Rear Bus)</td>
+          </tr>
+          <tr>
+            <td>Amp <strong>DIN</strong></td>
+            <td><strong>GPIO 17</strong></td>
+            <td>Left Row #10 (Rear Bus)</td>
+          </tr>
+          <tr>
+            <td>Amp <strong>VIN</strong></td>
+            <td><strong>5Vin</strong></td>
+            <td>Left Row #21 (Rear Bus)</td>
+          </tr>
+          <tr>
+            <td>Amp <strong>GND</strong></td>
+            <td><strong>GND Frame</strong></td>
+            <td>Right Row #1 & #22</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warning-banner">
+      <strong>Real-World Soldering Notes:</strong><br/>
+      1. <strong>Speaker− is differential</strong>: Solder Black speaker wire ONLY to MAX98357A <code>SPK−</code>, never to the copper GND frame.<br/>
+      2. <strong>18650 Voltage (3.7V–4.2V)</strong>: Route the 18650 through a 5V boost/charger module to <code>5Vin</code>, or use USB-C power while testing. Never connect raw 4.2V to <code>3V3</code>.<br/>
+      3. <strong>Clearance</strong>: Step the rear copper signal bus 6mm behind the ESP32-S3 PCB so bare copper wires never touch each other or the GND frame.
+    </div>
+  </aside>
+
+  <div class="bottom-bar">
+    <span>Left-Drag:</span> Orbit 360° &nbsp;|&nbsp; <span>Right-Drag:</span> Pan &nbsp;|&nbsp; <span>Scroll:</span> Zoom &nbsp;|&nbsp; <span>Click Pin/Wire:</span> Inspect Net & Dimensions
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // --- SCENE, CAMERA, RENDERER ---
+    const container = document.getElementById('canvas-container');
+    const labelsContainer = document.getElementById('labels-container');
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0b0e14, 0.0022);
+
+    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1, 1200);
+    camera.position.set(115, 95, 145);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    container.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 42, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.maxDistance = 420;
+    controls.minDistance = 25;
+
+    // --- LIGHTING ---
+    const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.75);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xfff7ed, 2.2);
+    keyLight.position.set(90, 160, 110);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(2048, 2048);
+    keyLight.shadow.camera.near = 20;
+    keyLight.shadow.camera.far = 350;
+    const d = 95;
+    keyLight.shadow.camera.left = -d;
+    keyLight.shadow.camera.right = d;
+    keyLight.shadow.camera.top = d;
+    keyLight.shadow.camera.bottom = -d;
+    keyLight.shadow.bias = -0.0005;
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 1.1);
+    rimLight.position.set(-110, 80, -100);
+    scene.add(rimLight);
+
+    const fillLight = new THREE.DirectionalLight(0xfdba74, 0.85);
+    fillLight.position.set(0, -60, 90);
+    scene.add(fillLight);
+
+    // --- WORKBENCH & MILLIMETER GRID (1 unit = 1 mm) ---
+    const deskGroup = new THREE.Group();
+    scene.add(deskGroup);
+
+    const gridHelper = new THREE.GridHelper(240, 24, 0xd98a4e, 0x1e293b);
+    gridHelper.position.y = -0.2;
+    gridHelper.material.opacity = 0.45;
+    gridHelper.material.transparent = true;
+    deskGroup.add(gridHelper);
+
+    const fineGrid = new THREE.GridHelper(120, 60, 0x334155, 0x151d2a);
+    fineGrid.position.y = -0.25;
+    fineGrid.material.opacity = 0.3;
+    fineGrid.material.transparent = true;
+    deskGroup.add(fineGrid);
+
+    const shadowPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(300, 300),
+      new THREE.ShadowMaterial({ opacity: 0.38 })
+    );
+    shadowPlane.rotation.x = -Math.PI / 2;
+    shadowPlane.position.y = -0.15;
+    shadowPlane.receiveShadow = true;
+    deskGroup.add(shadowPlane);
+
+    // Scale ruler bar on desk front (50 mm reference bar)
+    function createScaleRuler() {
+      const rulerGroup = new THREE.Group();
+      rulerGroup.position.set(0, 0.05, 52);
+      const barGeo = new THREE.BoxGeometry(50, 0.4, 2.2);
+      const barMat = new THREE.MeshStandardMaterial({ color: 0xd98a4e, metalness: 0.8, roughness: 0.25 });
+      const bar = new THREE.Mesh(barGeo, barMat);
+      rulerGroup.add(bar);
+      for (let x = -25; x <= 25; x += 10) {
+        const tick = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.5, 4.0), barMat);
+        tick.position.set(x, 0.1, 0);
+        rulerGroup.add(tick);
+      }
+      deskGroup.add(rulerGroup);
+    }
+    createScaleRuler();
+
+    // --- MATERIALS ---
+    const materials = {
+      bareCopper: new THREE.MeshStandardMaterial({
+        color: 0xd98a4e,
+        metalness: 0.88,
+        roughness: 0.22,
+        name: 'Bare Copper Structural Frame (GND)'
+      }),
+      solderJoint: new THREE.MeshStandardMaterial({
+        color: 0xcbd5e1,
+        metalness: 0.92,
+        roughness: 0.18
+      }),
+      goldPad: new THREE.MeshStandardMaterial({
+        color: 0xfbbf24,
+        metalness: 0.88,
+        roughness: 0.22
+      }),
+      pcbBlack: new THREE.MeshStandardMaterial({
+        color: 0x141820,
+        metalness: 0.15,
+        roughness: 0.55
+      }),
+      pcbPurple: new THREE.MeshStandardMaterial({
+        color: 0x4c1d95,
+        metalness: 0.18,
+        roughness: 0.52
+      }),
+      pcbGreen: new THREE.MeshStandardMaterial({
+        color: 0x065f46,
+        metalness: 0.18,
+        roughness: 0.52
+      }),
+      metalShield: new THREE.MeshStandardMaterial({
+        color: 0xd1d5db,
+        metalness: 0.85,
+        roughness: 0.25
+      }),
+      icBlack: new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        metalness: 0.1,
+        roughness: 0.7
+      }),
+      speakerPlastic: new THREE.MeshStandardMaterial({
+        color: 0x18181b,
+        metalness: 0.08,
+        roughness: 0.65
+      }),
+      speakerCone: new THREE.MeshStandardMaterial({
+        color: 0x09090b,
+        metalness: 0.25,
+        roughness: 0.35
+      }),
+      batteryWrap: new THREE.MeshStandardMaterial({
+        color: 0x2563eb,
+        metalness: 0.35,
+        roughness: 0.32
+      }),
+      net_GND: new THREE.MeshStandardMaterial({ color: 0xd98a4e, metalness: 0.88, roughness: 0.22 }),
+      net_3V3: new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.65, roughness: 0.28 }),
+      net_5V: new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.65, roughness: 0.28 }),
+      net_I2S_CLK: new THREE.MeshStandardMaterial({ color: 0x38bdf8, metalness: 0.65, roughness: 0.28 }),
+      net_I2S_WS: new THREE.MeshStandardMaterial({ color: 0xa855f7, metalness: 0.65, roughness: 0.28 }),
+      net_I2S_DATA: new THREE.MeshStandardMaterial({ color: 0x10b981, metalness: 0.65, roughness: 0.28 }),
+      net_SPK_POS: new THREE.MeshStandardMaterial({ color: 0xf43f5e, metalness: 0.35, roughness: 0.55 }),
+      net_SPK_NEG: new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.35, roughness: 0.55 })
+    };
+
+    const pcbMaterialsList = [materials.pcbBlack, materials.pcbPurple, materials.pcbGreen];
+
+    // --- TRACKING REGISTRIES FOR INTERACTION, STEPS & EXPLODE ---
+    const interactiveMeshes = [];
+    const netObjects = {}; // netName -> [Mesh]
+    const stepObjects = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+    const explodeGroups = []; // { group, basePos, dir }
+    const pinLabelsData = []; // { worldPosFn, text, title, desc, net, step }
+
+    function registerMesh(mesh, info) {
+      mesh.userData = { ...mesh.userData, ...info };
+      interactiveMeshes.push(mesh);
+      if (info.net) {
+        if (!netObjects[info.net]) netObjects[info.net] = [];
+        netObjects[info.net].push(mesh);
+      }
+      if (info.step && stepObjects[info.step]) {
+        stepObjects[info.step].push(mesh);
+      }
+    }
+
+    function addPinLabel(parentGroup, localPos, text, title, desc, net, step) {
+      const anchor = new THREE.Object3D();
+      anchor.position.copy(localPos);
+      parentGroup.add(anchor);
+
+      const el = document.createElement('div');
+      el.className = 'pin-label';
+      el.textContent = text;
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showInspector(title, desc, net);
+        if (net) highlightNet(net);
+      });
+      labelsContainer.appendChild(el);
+
+      pinLabelsData.push({
+        anchor,
+        el,
+        title,
+        desc,
+        net,
+        step
+      });
+    }
+
+    // --- HELPER: PROCEDURAL BENT COPPER WIRE / TUBE WITH ROUNDED CORNERS ---
+    function buildRoundedPath(points, cornerRadius = 1.6) {
+      if (points.length < 2) return null;
+      const vecs = points.map(p => (p instanceof THREE.Vector3 ? p.clone() : new THREE.Vector3(...p)));
+      if (vecs.length === 2) {
+        return new THREE.LineCurve3(vecs[0], vecs[1]);
+      }
+      const curvePath = new THREE.CurvePath();
+      let currStart = vecs[0];
+
+      for (let i = 1; i < vecs.length - 1; i++) {
+        const pPrev = vecs[i - 1];
+        const pCurr = vecs[i];
+        const pNext = vecs[i + 1];
+
+        const v1 = new THREE.Vector3().subVectors(pCurr, pPrev);
+        const v2 = new THREE.Vector3().subVectors(pNext, pCurr);
+        const len1 = v1.length();
+        const len2 = v2.length();
+
+        const r = Math.min(cornerRadius, len1 * 0.42, len2 * 0.42);
+        if (r < 0.15) {
+          curvePath.add(new THREE.LineCurve3(currStart, pCurr));
+          currStart = pCurr;
+          continue;
+        }
+
+        const pEnter = pCurr.clone().addScaledVector(v1.normalize(), -r);
+        const pExit = pCurr.clone().addScaledVector(v2.normalize(), r);
+
+        if (currStart.distanceTo(pEnter) > 0.01) {
+          curvePath.add(new THREE.LineCurve3(currStart, pEnter));
+        }
+        curvePath.add(new THREE.QuadraticBezierCurve3(pEnter, pCurr, pExit));
+        currStart = pExit;
+      }
+
+      const pLast = vecs[vecs.length - 1];
+      if (currStart.distanceTo(pLast) > 0.01) {
+        curvePath.add(new THREE.LineCurve3(currStart, pLast));
+      }
+      return curvePath;
+    }
+
+    function createCopperRod(points, radius, material, info, addSolderEnds = true) {
+      const path = buildRoundedPath(points, radius * 2.2);
+      const tubularSegments = Math.max(24, points.length * 16);
+      const geo = new THREE.TubeGeometry(path, tubularSegments, radius, 12, false);
+      const mesh = new THREE.Mesh(geo, material);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+      registerMesh(mesh, info);
+
+      if (addSolderEnds && points.length >= 2) {
+        const ends = [points[0], points[points.length - 1]];
+        ends.forEach(pt => {
+          const v = pt instanceof THREE.Vector3 ? pt : new THREE.Vector3(...pt);
+          const blob = new THREE.Mesh(
+            new THREE.SphereGeometry(radius * 1.65, 12, 12),
+            materials.solderJoint
+          );
+          blob.scale.set(1, 1, 1.25);
+          blob.position.copy(v);
+          scene.add(blob);
+          registerMesh(blob, info);
+        });
+      }
+      return mesh;
+    }
+
+    function createSolderJoint(pos, radius = 1.05, info = {}) {
+      const v = pos instanceof THREE.Vector3 ? pos : new THREE.Vector3(...pos);
+      const blob = new THREE.Mesh(
+        new THREE.SphereGeometry(radius, 12, 12),
+        materials.solderJoint
+      );
+      blob.position.copy(v);
+      scene.add(blob);
+      registerMesh(blob, info);
+      return blob;
+    }
+
+    // --- HELPER: CANVAS SILKSCREEN TEXTURE GENERATOR ---
+    function createESP32Silkscreen(isFront = true) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 560;
+      canvas.height = 1160;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#13171f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Subtle PCB copper trace pattern
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.lineWidth = 3;
+      for (let y = 100; y < 1050; y += 45) {
+        ctx.beginPath();
+        ctx.moveTo(80, y);
+        ctx.lineTo(480, y);
+        ctx.stroke();
+      }
+
+      const leftLabels = ['3V3', '3V3', 'RST', '4', '5', '6', '7', '15', '16', '17', '18', '8', '3', '46', '9', '10', '11', '12', '13', '14', '5Vin', 'GND'];
+      const rightLabels = ['GND', 'TX', 'RX', '1', '2', '42', '41', '40', '39', '38', '37', '36', '35', '0', '45', '48', '47', '21', '20', '19', 'GND', 'GND'];
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 24px monospace';
+      ctx.textBaseline = 'middle';
+
+      for (let i = 0; i < 22; i++) {
+        // Y from top (26.67mm) to bottom (-26.67mm) mapped onto 58mm height (canvas 0..1160)
+        const yMm = 26.67 - i * 2.54;
+        const py = ((29.0 - yMm) / 58.0) * 1160;
+
+        if (isFront) {
+          ctx.textAlign = 'left';
+          ctx.fillText(leftLabels[i], 54, py);
+          ctx.textAlign = 'right';
+          ctx.fillText(rightLabels[i], 506, py);
+        } else {
+          // Back view: horizontally mirrored! Left on back is rightLabels, Right on back is leftLabels
+          ctx.textAlign = 'left';
+          ctx.fillText(rightLabels[i], 54, py);
+          ctx.textAlign = 'right';
+          ctx.fillText(leftLabels[i], 506, py);
+        }
+      }
+
+      if (isFront) {
+        ctx.font = 'bold 22px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('RST', 435, 524);
+        ctx.fillText('BOOT', 435, 644);
+        ctx.fillText('RGB', 210, 750);
+        ctx.fillText('IN-OUT', 115, 880);
+      } else {
+        ctx.font = 'bold 26px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('V1120', 280, 340);
+        ctx.font = 'bold 34px monospace';
+        ctx.fillText('YD-ESP32-23', 280, 390);
+        ctx.font = 'bold 28px monospace';
+        ctx.fillText('2022-V1.3', 280, 440);
+        ctx.font = 'bold 26px sans-serif';
+        ctx.fillText('COM', 170, 1115);
+        ctx.fillText('USB', 390, 1115);
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.anisotropy = 4;
+      return tex;
+    }
+
+    function createAmpSilkscreen(isFront = true) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 380;
+      canvas.height = 356;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#43167c';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#f8fafc';
+      if (isFront) {
+        ctx.font = 'bold 22px monospace';
+        ctx.textAlign = 'left';
+        const labels = ['LRC', 'BCLK', 'DIN', 'GAIN', 'SD', 'GND', 'Vin'];
+        for (let i = 0; i < 7; i++) {
+          const y = 36 + i * 47.5;
+          ctx.fillText(labels[i], 48, y);
+        }
+        ctx.font = 'bold 24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('MAX98357A', 210, 165);
+        ctx.fillText('I2S Amp', 210, 195);
+        ctx.font = 'bold 32px monospace';
+        ctx.fillText('−', 315, 138);
+        ctx.fillText('+', 315, 222);
+      } else {
+        ctx.font = 'bold 23px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('4-8Ω 3W', 190, 60);
+        ctx.fillText('MAX98357A', 190, 125);
+        ctx.fillText('I2S Mono Amp.', 190, 160);
+        ctx.fillText('Vin: 2.5-5.5V', 190, 195);
+        ctx.fillText('Default 9dB Gain', 190, 230);
+        ctx.fillText('& (L+R)/2 out', 190, 265);
+      }
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.anisotropy = 4;
+      return tex;
+    }
+
+    // ============================================================================
+    // 1. BUILD YD-ESP32-23 (ESP32-S3 DEV BOARD) - CENTRAL SPINE
+    // ============================================================================
+    const espGroup = new THREE.Group();
+    const espBasePos = new THREE.Vector3(0, 48.0, 12.0);
+    espGroup.position.copy(espBasePos);
+    scene.add(espGroup);
+    explodeGroups.push({ group: espGroup, basePos: espBasePos.clone(), dir: new THREE.Vector3(0, 12, 22) });
+
+    const espPinsLocal = { left: [], right: [] };
+    const leftNames = ['3V3', '3V3', 'RST', 'GPIO4', 'GPIO5', 'GPIO6', 'GPIO7', 'GPIO15', 'GPIO16', 'GPIO17', 'GPIO18', 'GPIO8', 'GPIO3', 'GPIO46', 'GPIO9', 'GPIO10', 'GPIO11', 'GPIO12', 'GPIO13', 'GPIO14', '5Vin', 'GND'];
+    const rightNames = ['GND', 'TX', 'RX', 'GPIO1', 'GPIO2', 'GPIO42', 'GPIO41', 'GPIO40', 'GPIO39', 'GPIO38', 'GPIO37', 'GPIO36', 'GPIO35', 'GPIO0', 'GPIO45', 'GPIO48', 'GPIO47', 'GPIO21', 'GPIO20', 'GPIO19', 'GND', 'GND'];
+
+    let rgbLedMat;
+
+    function buildESP32Board() {
+      // Main PCB body (28 x 58 x 1.6 mm)
+      const frontTex = createESP32Silkscreen(true);
+      const backTex = createESP32Silkscreen(false);
+      const pcbGeo = new THREE.BoxGeometry(28.0, 58.0, 1.6);
+      const pcbMats = [
+        materials.pcbBlack,
+        materials.pcbBlack,
+        materials.pcbBlack,
+        materials.pcbBlack,
+        new THREE.MeshStandardMaterial({ map: frontTex, roughness: 0.5, metalness: 0.1 }),
+        new THREE.MeshStandardMaterial({ map: backTex, roughness: 0.5, metalness: 0.1 })
+      ];
+      pcbMaterialsList.push(pcbMats[4], pcbMats[5]);
+
+      const pcbMesh = new THREE.Mesh(pcbGeo, pcbMats);
+      pcbMesh.castShadow = true;
+      pcbMesh.receiveShadow = true;
+      espGroup.add(pcbMesh);
+      registerMesh(pcbMesh, {
+        title: 'YD-ESP32-23 (ESP32-S3 Dev Board)',
+        desc: '28×58mm dual-USB-C ESP32-S3 board. Mounted vertically on bare copper GND legs soldered into corner GND pads (L22, R1, R21, R22). All active I²S and power pins are on the left header column.',
+        step: 2
+      });
+
+      // Top PCB Antenna protrusion (18 x 6.5 x 1.6 mm)
+      const antMesh = new THREE.Mesh(new THREE.BoxGeometry(18.0, 6.5, 1.6), materials.pcbBlack);
+      antMesh.position.set(0, 32.25, 0);
+      espGroup.add(antMesh);
+      registerMesh(antMesh, {
+        title: '2.4 GHz PCB Meander Antenna',
+        desc: 'Keep copper frame rods clear of this top 6.5mm antenna region for clean Wi-Fi reception to the PC bridge.',
+        step: 2
+      });
+
+      // Gold antenna meander trace on top tab
+      const traceMesh = new THREE.Mesh(new THREE.BoxGeometry(13.5, 3.2, 1.68), materials.goldPad);
+      traceMesh.position.set(0, 32.5, 0);
+      espGroup.add(traceMesh);
+
+      // ESP32-S3-WROOM-1 RF Metal Can (18 x 19.5 x 2.8 mm)
+      const shieldMesh = new THREE.Mesh(new THREE.BoxGeometry(18.0, 19.5, 2.8), materials.metalShield);
+      shieldMesh.position.set(0, 17.5, 2.2);
+      shieldMesh.castShadow = true;
+      espGroup.add(shieldMesh);
+      registerMesh(shieldMesh, {
+        title: 'ESP32-S3-WROOM-1 Module',
+        desc: 'Dual-core Xtensa LX7 MCU handling Wi-Fi WebSocket streaming, I²S DMA capture/playback, and push-to-talk state machine.',
+        step: 2
+      });
+
+      // Tactile Push Buttons: RST (Y=+2.8) and BOOT (Y=-3.2)
+      const btnBaseGeo = new THREE.BoxGeometry(3.6, 2.8, 1.4);
+      const btnCapGeo = new THREE.BoxGeometry(2.0, 1.5, 1.0);
+      const btnCapMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
+
+      // RST Button
+      const rstBase = new THREE.Mesh(btnBaseGeo, materials.metalShield);
+      rstBase.position.set(4.6, 2.8, 1.5);
+      const rstCap = new THREE.Mesh(btnCapGeo, btnCapMat);
+      rstCap.position.set(4.6, 2.8, 2.3);
+      espGroup.add(rstBase, rstCap);
+      registerMesh(rstCap, {
+        title: 'RST Button (Reset)',
+        desc: 'Hardware reset button. Hold BOOT, tap RST, then release BOOT if manual ROM bootloader entry is needed.',
+        step: 2
+      });
+
+      // BOOT Button (GPIO0 - Hold to Talk)
+      const bootBase = new THREE.Mesh(btnBaseGeo, materials.metalShield);
+      bootBase.position.set(4.6, -3.2, 1.5);
+      const bootCap = new THREE.Mesh(btnCapGeo, new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.35 }));
+      bootCap.position.set(4.6, -3.2, 2.3);
+      espGroup.add(bootBase, bootCap);
+      registerMesh(bootCap, {
+        title: 'BOOT Button (GPIO0 · Push-To-Talk)',
+        desc: 'Hold BOOT to record English speech; release to submit to Codex. Accessible directly on the front face while the rear 18650 base counterbalances finger pressure.',
+        step: 2
+      });
+      addPinLabel(espGroup, new THREE.Vector3(4.6, -3.2, 3.6), 'BOOT (Hold to Talk)', 'BOOT Button (GPIO0)', 'Hold to speak; release to submit utterance to Codex.', null, 2);
+
+      // LDO Regulator (SOT-223)
+      const ldoMesh = new THREE.Mesh(new THREE.BoxGeometry(6.5, 3.5, 1.6), materials.icBlack);
+      ldoMesh.position.set(-3.8, -0.5, 1.6);
+      espGroup.add(ldoMesh);
+      registerMesh(ldoMesh, {
+        title: '3.3V LDO Regulator (AMS1117-3.3)',
+        desc: 'Steps 5Vin / USB 5V down to 3.3V for the ESP32-S3 and I²S microphone.',
+        step: 2
+      });
+
+      // WS2812 RGB Status LED (5050 package at GPIO48)
+      const ledHousing = new THREE.Mesh(
+        new THREE.BoxGeometry(5.0, 5.0, 1.5),
+        new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.3 })
+      );
+      ledHousing.position.set(-2.5, -11.5, 1.55);
+      rgbLedMat = new THREE.MeshStandardMaterial({
+        color: 0x22c55e,
+        emissive: 0x22c55e,
+        emissiveIntensity: 1.6,
+        roughness: 0.15
+      });
+      const ledEmitter = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 1.7, 1.65, 20), rgbLedMat);
+      ledEmitter.rotation.x = Math.PI / 2;
+      ledEmitter.position.set(-2.5, -11.5, 1.6);
+      espGroup.add(ledHousing, ledEmitter);
+      registerMesh(ledEmitter, {
+        title: 'Onboard Addressable RGB LED (GPIO48)',
+        desc: 'Shows HarnessLink state: Green=Ready, Red=Recording, Amber=Codex Working, Blue=Speaking, Purple=Waiting, White=Terminal Input Needed.',
+        step: 2
+      });
+
+      // Dual USB-C Ports at bottom edge
+      const usbGeo = new THREE.BoxGeometry(8.9, 7.2, 3.2);
+      const usbLeft = new THREE.Mesh(usbGeo, materials.metalShield);
+      usbLeft.position.set(-5.5, -26.8, 2.4);
+      const usbRight = new THREE.Mesh(usbGeo, materials.metalShield);
+      usbRight.position.set(5.5, -26.8, 2.4);
+      espGroup.add(usbLeft, usbRight);
+      registerMesh(usbLeft, {
+        title: 'Native USB-C Port (Labeled USB)',
+        desc: 'Use this left USB-C port for flashing firmware and running `harnesslink provision` over USB Serial/JTAG.',
+        step: 2
+      });
+      registerMesh(usbRight, {
+        title: 'UART USB-C Port (Labeled COM)',
+        desc: 'Secondary UART bridge USB-C port.',
+        step: 2
+      });
+
+      // 44 Through-Hole Pads (22 Left at X=-12.7, 22 Right at X=+12.7)
+      const roundPadGeo = new THREE.CylinderGeometry(0.95, 0.95, 1.72, 16);
+      roundPadGeo.rotateX(Math.PI / 2);
+      const squarePadGeo = new THREE.BoxGeometry(1.9, 1.9, 1.72);
+
+      for (let i = 0; i < 22; i++) {
+        const y = 26.67 - i * 2.54;
+        const posL = new THREE.Vector3(-12.7, y, 0);
+        const posR = new THREE.Vector3(12.7, y, 0);
+        espPinsLocal.left.push(posL);
+        espPinsLocal.right.push(posR);
+
+        const padL = new THREE.Mesh(i === 0 ? squarePadGeo : roundPadGeo, materials.goldPad);
+        padL.position.copy(posL);
+        espGroup.add(padL);
+        registerMesh(padL, {
+          title: `ESP32-S3 Left Pin #${i + 1}: ${leftNames[i]}`,
+          desc: `Physical Left Header Row, Hole #${i + 1} from top (Y = ${y.toFixed(2)}mm relative to PCB center).`,
+          step: 2
+        });
+
+        const padR = new THREE.Mesh(roundPadGeo, materials.goldPad);
+        padR.position.copy(posR);
+        espGroup.add(padR);
+        registerMesh(padR, {
+          title: `ESP32-S3 Right Pin #${i + 1}: ${rightNames[i]}`,
+          desc: `Physical Right Header Row, Hole #${i + 1} from top (Y = ${y.toFixed(2)}mm relative to PCB center).`,
+          step: 2
+        });
+      }
+
+      // Key pin callout labels on ESP32-S3
+      addPinLabel(espGroup, espPinsLocal.left[0], '3V3 (L1)', 'ESP32-S3 3V3 (Left Pin 1)', '3.3V supply feeding Microphone VDD.', '3V3', 3);
+      addPinLabel(espGroup, espPinsLocal.left[3], 'GPIO4 (SCK)', 'ESP32-S3 GPIO4 (Left Pin 4)', 'I²S serial clock to Microphone SCK.', 'I2S_CLK', 3);
+      addPinLabel(espGroup, espPinsLocal.left[4], 'GPIO5 (WS)', 'ESP32-S3 GPIO5 (Left Pin 5)', 'I²S word select to Microphone WS.', 'I2S_WS', 3);
+      addPinLabel(espGroup, espPinsLocal.left[5], 'GPIO6 (SD)', 'ESP32-S3 GPIO6 (Left Pin 6)', 'I²S serial data from Microphone SD.', 'I2S_DATA', 3);
+      addPinLabel(espGroup, espPinsLocal.left[7], 'GPIO15 (BCLK)', 'ESP32-S3 GPIO15 (Left Pin 8)', 'I²S bit clock routed via rear copper bus to MAX98357A BCLK.', 'I2S_CLK', 4);
+      addPinLabel(espGroup, espPinsLocal.left[8], 'GPIO16 (LRC)', 'ESP32-S3 GPIO16 (Left Pin 9)', 'I²S word select routed via rear copper bus to MAX98357A LRC.', 'I2S_WS', 4);
+      addPinLabel(espGroup, espPinsLocal.left[9], 'GPIO17 (DIN)', 'ESP32-S3 GPIO17 (Left Pin 10)', 'I²S audio data routed via rear copper bus to MAX98357A DIN.', 'I2S_DATA', 4);
+      addPinLabel(espGroup, espPinsLocal.left[20], '5Vin (L21)', 'ESP32-S3 5Vin (Left Pin 21)', '5V power rail shared with MAX98357A VIN and 18650 5V boost output.', '5V', 4);
+      addPinLabel(espGroup, espPinsLocal.left[21], 'GND (L22)', 'ESP32-S3 GND (Left Pin 22)', 'Soldered directly to Left Structural Copper GND Pillar.', 'GND', 2);
+      addPinLabel(espGroup, espPinsLocal.right[0], 'GND (R1)', 'ESP32-S3 GND (Right Pin 1)', 'Soldered directly to Right Structural Copper GND Pillar.', 'GND', 2);
+      addPinLabel(espGroup, espPinsLocal.right[21], 'GND (R22)', 'ESP32-S3 GND (Right Pin 22)', 'Soldered directly to Right Structural Copper GND Pillar.', 'GND', 2);
+    }
+    buildESP32Board();
+
+    // ============================================================================
+    // 2. BUILD I²S MICROPHONE BREAKOUT (ROUND BLACK PCB) - LEFT WING POD
+    // ============================================================================
+    const micGroup = new THREE.Group();
+    // Centered at Y = 48.0 + 16.51 = 64.51 (exact same world Y as GPIO5!)
+    const micBasePos = new THREE.Vector3(-37.0, 48.0 + 16.51, 12.0);
+    micGroup.position.copy(micBasePos);
+    scene.add(micGroup);
+    explodeGroups.push({ group: micGroup, basePos: micBasePos.clone(), dir: new THREE.Vector3(-24, 10, 12) });
+
+    // Local coordinates of the 6 pins on the round microphone breakout:
+    // Left column (X = -3.81): Top=GND (+2.54), Mid=VDD (0), Bot=SD (-2.54)
+    // Right column (X = +3.81): Top=L/R (+2.54), Mid=WS (0), Bot=SCK (-2.54)
+    const micPinsLocal = {
+      GND: new THREE.Vector3(-3.81, 2.54, 0),
+      VDD: new THREE.Vector3(-3.81, 0.0, 0),
+      SD: new THREE.Vector3(-3.81, -2.54, 0),
+      LR: new THREE.Vector3(3.81, 2.54, 0),
+      WS: new THREE.Vector3(3.81, 0.0, 0),
+      SCK: new THREE.Vector3(3.81, -2.54, 0)
+    };
+
+    function buildMicBoard() {
+      const discGeo = new THREE.CylinderGeometry(7.2, 7.2, 1.6, 36);
+      discGeo.rotateX(Math.PI / 2);
+      const discMesh = new THREE.Mesh(discGeo, materials.pcbBlack);
+      discMesh.castShadow = true;
+      discMesh.receiveShadow = true;
+      micGroup.add(discMesh);
+      registerMesh(discMesh, {
+        title: 'I²S MEMS Microphone Breakout (Ø14.4mm)',
+        desc: 'Suspended on the upper-left copper wing right beside GPIO 4, 5, and 6. Top pads GND and L/R are bridged together onto the copper GND bar to select the Left I²S channel.',
+        step: 3
+      });
+
+      // Silver rectangular MEMS package U1 in center (3.8 x 3.0 x 1.0 mm)
+      const memsMesh = new THREE.Mesh(new THREE.BoxGeometry(3.0, 3.8, 1.0), materials.metalShield);
+      memsMesh.position.set(0, 0.8, 1.2);
+      const portHole = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.1, 16), materials.icBlack);
+      portHole.rotation.x = Math.PI / 2;
+      portHole.position.set(0, 1.2, 1.25);
+      micGroup.add(memsMesh, portHole);
+
+      // 6 Gold Through-Hole Pads
+      const roundPadGeo = new THREE.CylinderGeometry(0.95, 0.95, 1.72, 16);
+      roundPadGeo.rotateX(Math.PI / 2);
+      const squarePadGeo = new THREE.BoxGeometry(1.9, 1.9, 1.72);
+
+      Object.entries(micPinsLocal).forEach(([name, pos]) => {
+        const pad = new THREE.Mesh(name === 'VDD' ? squarePadGeo : roundPadGeo, materials.goldPad);
+        pad.position.copy(pos);
+        micGroup.add(pad);
+        registerMesh(pad, {
+          title: `Microphone Pin: ${name === 'LR' ? 'L/R' : name}`,
+          desc: `I²S Microphone pad ${name === 'LR' ? 'L/R (tied to GND for Left channel)' : name}.`,
+          step: 3
+        });
+      });
+
+      addPinLabel(micGroup, new THREE.Vector3(-8.5, 0.2, 0), 'Mic VDD', 'Microphone VDD (3.3V)', 'Connected to ESP32-S3 3V3 (Left Pin 1). Verify 3.3V rating first.', '3V3', 3);
+      addPinLabel(micGroup, new THREE.Vector3(0.0, 5.8, 0), 'Mic GND+L/R', 'Microphone GND & L/R', 'Both top pins bridged directly onto the copper GND standoff arm for Left channel.', 'GND', 3);
+      addPinLabel(micGroup, new THREE.Vector3(8.2, 0.8, 0), 'Mic WS', 'Microphone WS (Word Select)', 'Connected straight across to ESP32-S3 GPIO5.', 'I2S_WS', 3);
+      addPinLabel(micGroup, new THREE.Vector3(8.2, -4.2, 0), 'Mic SCK', 'Microphone SCK (Bit Clock)', 'Connected to ESP32-S3 GPIO4.', 'I2S_CLK', 3);
+      addPinLabel(micGroup, new THREE.Vector3(-8.5, -4.2, 0), 'Mic SD', 'Microphone SD (Data Out)', 'Connected to ESP32-S3 GPIO6.', 'I2S_DATA', 3);
+    }
+    buildMicBoard();
+
+    // ============================================================================
+    // 3. BUILD MAX98357A I²S AMPLIFIER BREAKOUT (PURPLE PCB) - RIGHT WING POD
+    // ============================================================================
+    const ampGroup = new THREE.Group();
+    // Centered at (+38.0, 48.0 + 3.81, 12.0) = (+38.0, 51.81, 12.0)
+    const ampBasePos = new THREE.Vector3(38.0, 51.81, 12.0);
+    ampGroup.position.copy(ampBasePos);
+    scene.add(ampGroup);
+    explodeGroups.push({ group: ampGroup, basePos: ampBasePos.clone(), dir: new THREE.Vector3(24, 6, 12) });
+
+    // Oriented with 7-pin header vertically on the inner LEFT edge (X = -7.2)
+    // From Top (+7.62) to Bottom (-7.62): LRC, BCLK, DIN, GAIN, SD, GND, Vin
+    const ampPinsLocal = {
+      LRC: new THREE.Vector3(-7.2, 7.62, 0),
+      BCLK: new THREE.Vector3(-7.2, 5.08, 0),
+      DIN: new THREE.Vector3(-7.2, 2.54, 0),
+      GAIN: new THREE.Vector3(-7.2, 0.0, 0),
+      SD: new THREE.Vector3(-7.2, -2.54, 0),
+      GND: new THREE.Vector3(-7.2, -5.08, 0),
+      VIN: new THREE.Vector3(-7.2, -7.62, 0),
+      SPK_NEG: new THREE.Vector3(4.8, 1.8, 0),
+      SPK_POS: new THREE.Vector3(4.8, -1.8, 0),
+      MOUNT_TOP: new THREE.Vector3(6.6, 6.4, 0),
+      MOUNT_BOT: new THREE.Vector3(6.6, -6.4, 0)
+    };
+
+    function buildAmpBoard() {
+      const frontTex = createAmpSilkscreen(true);
+      const backTex = createAmpSilkscreen(false);
+      const pcbGeo = new THREE.BoxGeometry(18.0, 19.0, 1.6);
+      const pcbMats = [
+        materials.pcbPurple,
+        materials.pcbPurple,
+        materials.pcbPurple,
+        materials.pcbPurple,
+        new THREE.MeshStandardMaterial({ map: frontTex, roughness: 0.5, metalness: 0.15 }),
+        new THREE.MeshStandardMaterial({ map: backTex, roughness: 0.5, metalness: 0.15 })
+      ];
+      pcbMaterialsList.push(pcbMats[4], pcbMats[5]);
+
+      const pcbMesh = new THREE.Mesh(pcbGeo, pcbMats);
+      pcbMesh.castShadow = true;
+      pcbMesh.receiveShadow = true;
+      ampGroup.add(pcbMesh);
+      registerMesh(pcbMesh, {
+        title: 'MAX98357A I²S Mono Amplifier Breakout (Purple PCB)',
+        desc: 'Mounted on the right copper wing with its 7-pin header facing inward toward the ESP32-S3 and its SPK+/SPK− pads facing the speaker.',
+        step: 4
+      });
+
+      // MAX98357A QFN IC in center
+      const icMesh = new THREE.Mesh(new THREE.BoxGeometry(3.2, 3.2, 0.9), materials.icBlack);
+      icMesh.position.set(-0.5, 0, 1.2);
+      ampGroup.add(icMesh);
+
+      // 7 Header Pads + 2 Speaker Pads + 2 Corner Mounting Rings
+      const roundPadGeo = new THREE.CylinderGeometry(0.95, 0.95, 1.72, 16);
+      roundPadGeo.rotateX(Math.PI / 2);
+      const squarePadGeo = new THREE.BoxGeometry(1.9, 1.9, 1.72);
+      const mountRingGeo = new THREE.CylinderGeometry(1.75, 1.75, 1.72, 20);
+      mountRingGeo.rotateX(Math.PI / 2);
+
+      ['LRC', 'BCLK', 'DIN', 'GAIN', 'SD', 'GND', 'VIN'].forEach(name => {
+        const pad = new THREE.Mesh(name === 'VIN' ? squarePadGeo : roundPadGeo, materials.goldPad);
+        pad.position.copy(ampPinsLocal[name]);
+        ampGroup.add(pad);
+        registerMesh(pad, {
+          title: `MAX98357A Pin: ${name}`,
+          desc: name === 'GAIN' || name === 'SD'
+            ? `Leave ${name} unconnected at breakout default.`
+            : `Active amplifier pin ${name}.`,
+          step: 4
+        });
+      });
+
+      ['SPK_POS', 'SPK_NEG'].forEach(name => {
+        const pad = new THREE.Mesh(roundPadGeo, materials.goldPad);
+        pad.position.copy(ampPinsLocal[name]);
+        ampGroup.add(pad);
+        registerMesh(pad, {
+          title: `MAX98357A Speaker Output: ${name === 'SPK_POS' ? 'SPK+ (Red)' : 'SPK− (Black)'}`,
+          desc: 'Class-D differential bridge-tied load (BTL) speaker output. Never connect SPK− to GND!',
+          net: 'SPK',
+          step: 5
+        });
+      });
+
+      ['MOUNT_TOP', 'MOUNT_BOT'].forEach(name => {
+        const ring = new THREE.Mesh(mountRingGeo, materials.goldPad);
+        ring.position.copy(ampPinsLocal[name]);
+        ampGroup.add(ring);
+      });
+
+      addPinLabel(ampGroup, ampPinsLocal.LRC, 'Amp LRC', 'MAX98357A LRC', 'Connected via rear copper bus to ESP32-S3 GPIO16.', 'I2S_WS', 4);
+      addPinLabel(ampGroup, ampPinsLocal.BCLK, 'Amp BCLK', 'MAX98357A BCLK', 'Connected via rear copper bus to ESP32-S3 GPIO15.', 'I2S_CLK', 4);
+      addPinLabel(ampGroup, ampPinsLocal.DIN, 'Amp DIN', 'MAX98357A DIN', 'Connected via rear copper bus to ESP32-S3 GPIO17.', 'I2S_DATA', 4);
+      addPinLabel(ampGroup, ampPinsLocal.GND, 'Amp GND', 'MAX98357A GND', 'Soldered to the Right Wing Copper GND Frame.', 'GND', 4);
+      addPinLabel(ampGroup, ampPinsLocal.VIN, 'Amp VIN (5V)', 'MAX98357A VIN (2.5–5.5V)', 'Connected to the 5V rail (ESP32-S3 5Vin / 5V Boost).', '5V', 4);
+      addPinLabel(ampGroup, ampPinsLocal.SPK_POS, 'SPK+ / SPK−', 'MAX98357A Speaker Outputs', 'Red wire → SPK+, Black wire → SPK− (Differential output, NOT GND).', 'SPK', 5);
+    }
+    buildAmpBoard();
+
+    // ============================================================================
+    // 4. BUILD CAVITY SPEAKER (30 x 40 x 14 mm) - CENTRAL REAR ACOUSTIC BASKET
+    // ============================================================================
+    const spkGroup = new THREE.Group();
+    const spkBasePos = new THREE.Vector3(0, 52.0, -14.0);
+    spkGroup.position.copy(spkBasePos);
+    scene.add(spkGroup);
+    explodeGroups.push({ group: spkGroup, basePos: spkBasePos.clone(), dir: new THREE.Vector3(0, 18, -22) });
+
+    const spkPinsLocal = {
+      RED_EXIT: new THREE.Vector3(15.0, -2.0, 0),
+      BLK_EXIT: new THREE.Vector3(15.0, 2.0, 0)
+    };
+
+    function buildSpeaker() {
+      // Main rectangular acoustic box (30 x 40 x 12 mm)
+      const boxMesh = new THREE.Mesh(new THREE.BoxGeometry(30.0, 40.0, 12.0), materials.speakerPlastic);
+      boxMesh.castShadow = true;
+      boxMesh.receiveShadow = true;
+      spkGroup.add(boxMesh);
+      registerMesh(boxMesh, {
+        title: 'Enclosed Cavity Speaker (30×40×14mm, 4Ω/8Ω 3W)',
+        desc: 'Cradled inside the central copper basket behind the ESP32-S3 spine. Projects clear spoken replies while keeping speaker magnet away from the MEMS microphone.',
+        step: 5
+      });
+
+      // Raised round driver bezel (Ø26mm) facing rear/upward or forward
+      const bezelMesh = new THREE.Mesh(new THREE.CylinderGeometry(13.2, 13.8, 3.6, 32), materials.speakerPlastic);
+      bezelMesh.rotation.x = Math.PI / 2;
+      bezelMesh.position.set(0, 0, -7.2);
+      spkGroup.add(bezelMesh);
+
+      // Speaker cone & center dome
+      const coneMesh = new THREE.Mesh(new THREE.CylinderGeometry(10.5, 6.0, 2.2, 32), materials.speakerCone);
+      coneMesh.rotation.x = Math.PI / 2;
+      coneMesh.position.set(0, 0, -8.2);
+      const domeMesh = new THREE.Mesh(new THREE.SphereGeometry(5.2, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2), materials.speakerCone);
+      domeMesh.rotation.x = -Math.PI / 2;
+      domeMesh.position.set(0, 0, -7.8);
+      spkGroup.add(coneMesh, domeMesh);
+
+      // White foam adhesive strips on left/right side flanges (as seen in parts-front.jpg)
+      const foamMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.8 });
+      [-15.2, 15.2].forEach(x => {
+        const topTab = new THREE.Mesh(new THREE.BoxGeometry(0.8, 11.0, 9.0), foamMat);
+        topTab.position.set(x, 12.5, 0);
+        const botTab = new THREE.Mesh(new THREE.BoxGeometry(0.8, 11.0, 9.0), foamMat);
+        botTab.position.set(x, -12.5, 0);
+        spkGroup.add(topTab, botTab);
+      });
+
+      addPinLabel(spkGroup, new THREE.Vector3(0, 21.5, 0), 'Speaker (4Ω/8Ω 3W)', 'Cavity Speaker Module', 'Held in the central copper cradle; wired directly to MAX98357A SPK+ and SPK−.', 'SPK', 5);
+    }
+    buildSpeaker();
+
+    // ============================================================================
+    // 5. BUILD 18650 BATTERY (Ø18 x 65 mm) & 5V BOOST/CHARGER MODULE - BASE
+    // ============================================================================
+    const batGroup = new THREE.Group();
+    const batBasePos = new THREE.Vector3(0, 12.0, -24.0);
+    batGroup.position.copy(batBasePos);
+    scene.add(batGroup);
+    explodeGroups.push({ group: batGroup, basePos: batBasePos.clone(), dir: new THREE.Vector3(0, -10, -28) });
+
+    // Boost module group sitting right above the right end of the 18650 cradle
+    const boostGroup = new THREE.Group();
+    const boostBasePos = new THREE.Vector3(20.0, 26.0, -24.0);
+    boostGroup.position.copy(boostBasePos);
+    scene.add(boostGroup);
+    explodeGroups.push({ group: boostGroup, basePos: boostBasePos.clone(), dir: new THREE.Vector3(14, -4, -22) });
+
+    const boostPinsLocal = {
+      BAT_POS: new THREE.Vector3(9.5, 0, 4.5),
+      BAT_NEG: new THREE.Vector3(-9.5, 0, 4.5),
+      OUT_5V: new THREE.Vector3(9.5, 0, -4.5),
+      OUT_GND: new THREE.Vector3(-9.5, 0, -4.5)
+    };
+
+    function buildBatteryAndBoost() {
+      // 18650 Lithium-Ion Cell (Ø18mm x 65mm horizontal cylinder along X)
+      const cellGeo = new THREE.CylinderGeometry(9.0, 9.0, 65.0, 36);
+      cellGeo.rotateZ(Math.PI / 2);
+      const cellMesh = new THREE.Mesh(cellGeo, materials.batteryWrap);
+      cellMesh.castShadow = true;
+      cellMesh.receiveShadow = true;
+      batGroup.add(cellMesh);
+      registerMesh(cellMesh, {
+        title: '18650 Lithium-Ion Battery (Ø18mm × 65mm, 3.7V Nominal)',
+        desc: 'Mounted horizontally in the twin rear copper cradle rings as a low-center-of-gravity counterweight. Feeds a 5V Boost/Charger module to supply regulated 5V to 5Vin and MAX98357A VIN.',
+        step: 6
+      });
+
+      // Positive terminal button at +X (+32.5mm) and Negative flat cap at -X (-32.5mm)
+      const posCap = new THREE.Mesh(
+        new THREE.CylinderGeometry(4.8, 4.8, 1.6, 24).rotateZ(Math.PI / 2),
+        materials.metalShield
+      );
+      posCap.position.set(33.0, 0, 0);
+      const negCap = new THREE.Mesh(
+        new THREE.CylinderGeometry(8.6, 8.6, 0.8, 24).rotateZ(Math.PI / 2),
+        materials.metalShield
+      );
+      negCap.position.set(-32.6, 0, 0);
+      batGroup.add(posCap, negCap);
+
+      // Copper leaf-spring contact plates at both ends of 18650
+      const contactGeo = new THREE.BoxGeometry(1.4, 12.0, 10.0);
+      const posContact = new THREE.Mesh(contactGeo, materials.bareCopper);
+      posContact.position.set(34.2, 0, 0);
+      const negContact = new THREE.Mesh(contactGeo, materials.bareCopper);
+      negContact.position.set(-33.6, 0, 0);
+      batGroup.add(posContact, negContact);
+      registerMesh(posContact, {
+        title: '18650 Positive (+) Copper Contact Tab',
+        desc: 'Insulated from the GND frame; feeds B+ (3.7V–4.2V) into the 5V Boost/Charger module via the power switch.',
+        net: '5V',
+        step: 6
+      });
+      registerMesh(negContact, {
+        title: '18650 Negative (−) Copper Contact Tab',
+        desc: 'Soldered directly to the bare copper structural GND frame.',
+        net: 'GND',
+        step: 6
+      });
+
+      addPinLabel(batGroup, new THREE.Vector3(0, 10.8, 0), '18650 Cell (3.7V 65mm)', '18650 Li-Ion Battery Counterweight', 'Cradled in twin Ø19.6mm copper hoops at the rear base.', '5V', 6);
+
+      // 5V Boost + Li-Ion Protection/Charger Module (22 x 1.6 x 14 mm horizontal deck)
+      const boostPcb = new THREE.Mesh(new THREE.BoxGeometry(22.0, 1.6, 14.0), materials.pcbGreen);
+      boostPcb.castShadow = true;
+      boostGroup.add(boostPcb);
+      registerMesh(boostPcb, {
+        title: '5V Boost / 18650 Charger Module + Slide Switch',
+        desc: 'Essential for battery operation: protects the 18650 cell and steps 3.7V–4.2V up to a clean 5.0V rail for ESP32-S3 5Vin and MAX98357A VIN.',
+        step: 6
+      });
+
+      // Inductor coil & slide switch on boost module
+      const inductor = new THREE.Mesh(new THREE.BoxGeometry(5.5, 3.2, 5.5), materials.icBlack);
+      inductor.position.set(-2.0, 2.2, 0);
+      const swBody = new THREE.Mesh(new THREE.BoxGeometry(6.5, 2.8, 3.2), materials.metalShield);
+      swBody.position.set(6.0, 2.0, 3.5);
+      boostGroup.add(inductor, swBody);
+
+      addPinLabel(boostGroup, new THREE.Vector3(0, 4.5, 0), '5V Boost + Switch', '18650 5V Step-Up / Charger Module', 'Steps 18650 3.7V up to 5.0V for the 5Vin power bus.', '5V', 6);
+    }
+    buildBatteryAndBoost();
+
+    // ============================================================================
+    // 6. BUILD STRUCTURAL BARE COPPER STANDOFF FRAME & SOLDERED SIGNAL BUSES
+    // ============================================================================
+    // Helper to convert any board's local pin coordinate into exact 3D world space
+    function worldPin(group, localVec) {
+      return localVec.clone().applyMatrix4(group.matrixWorld);
+    }
+
+    espGroup.updateMatrixWorld(true);
+    micGroup.updateMatrixWorld(true);
+    ampGroup.updateMatrixWorld(true);
+    spkGroup.updateMatrixWorld(true);
+    batGroup.updateMatrixWorld(true);
+    boostGroup.updateMatrixWorld(true);
+
+    // Exact world coordinates of all connected pins:
+    const P = {
+      ESP_3V3: worldPin(espGroup, espPinsLocal.left[0]),
+      ESP_GPIO4: worldPin(espGroup, espPinsLocal.left[3]),
+      ESP_GPIO5: worldPin(espGroup, espPinsLocal.left[4]),
+      ESP_GPIO6: worldPin(espGroup, espPinsLocal.left[5]),
+      ESP_GPIO15: worldPin(espGroup, espPinsLocal.left[7]),
+      ESP_GPIO16: worldPin(espGroup, espPinsLocal.left[8]),
+      ESP_GPIO17: worldPin(espGroup, espPinsLocal.left[9]),
+      ESP_5VIN: worldPin(espGroup, espPinsLocal.left[20]),
+      ESP_GND_L22: worldPin(espGroup, espPinsLocal.left[21]),
+      ESP_GND_R1: worldPin(espGroup, espPinsLocal.right[0]),
+      ESP_GND_R21: worldPin(espGroup, espPinsLocal.right[20]),
+      ESP_GND_R22: worldPin(espGroup, espPinsLocal.right[21]),
+
+      MIC_GND: worldPin(micGroup, micPinsLocal.GND),
+      MIC_VDD: worldPin(micGroup, micPinsLocal.VDD),
+      MIC_SD: worldPin(micGroup, micPinsLocal.SD),
+      MIC_LR: worldPin(micGroup, micPinsLocal.LR),
+      MIC_WS: worldPin(micGroup, micPinsLocal.WS),
+      MIC_SCK: worldPin(micGroup, micPinsLocal.SCK),
+
+      AMP_LRC: worldPin(ampGroup, ampPinsLocal.LRC),
+      AMP_BCLK: worldPin(ampGroup, ampPinsLocal.BCLK),
+      AMP_DIN: worldPin(ampGroup, ampPinsLocal.DIN),
+      AMP_GND: worldPin(ampGroup, ampPinsLocal.GND),
+      AMP_VIN: worldPin(ampGroup, ampPinsLocal.VIN),
+      AMP_SPK_POS: worldPin(ampGroup, ampPinsLocal.SPK_POS),
+      AMP_SPK_NEG: worldPin(ampGroup, ampPinsLocal.SPK_NEG),
+      AMP_MNT_TOP: worldPin(ampGroup, ampPinsLocal.MOUNT_TOP),
+      AMP_MNT_BOT: worldPin(ampGroup, ampPinsLocal.MOUNT_BOT),
+
+      SPK_RED: worldPin(spkGroup, spkPinsLocal.RED_EXIT),
+      SPK_BLK: worldPin(spkGroup, spkPinsLocal.BLK_EXIT),
+
+      BOOST_BAT_POS: worldPin(boostGroup, boostPinsLocal.BAT_POS),
+      BOOST_BAT_NEG: worldPin(boostGroup, boostPinsLocal.BAT_NEG),
+      BOOST_OUT_5V: worldPin(boostGroup, boostPinsLocal.OUT_5V),
+      BOOST_OUT_GND: worldPin(boostGroup, boostPinsLocal.OUT_GND)
+    };
+
+    const ROD_STRUCT = 0.72; // 1.44mm diameter (15-16 AWG heavy bare copper structural frame)
+    const ROD_SIGNAL = 0.46; // 0.92mm diameter (19-20 AWG solid copper signal/power bus)
+
+    // --- STEP 1: STRUCTURAL COPPER BASE & 18650 CRADLE RINGS (GND) ---
+    // Base footprint on desk (Y = 0.72mm, X from -42 to +42, Z from -36 to +20)
+    createCopperRod([
+      [-42, ROD_STRUCT, 20],
+      [-42, ROD_STRUCT, -36],
+      [42, ROD_STRUCT, -36],
+      [42, ROD_STRUCT, 20],
+      [-22, ROD_STRUCT, 20],
+      [-18, 8.5, 20], // Front arch under dual USB-C ports for cable clearance
+      [18, 8.5, 20],
+      [22, ROD_STRUCT, 20],
+      [42, ROD_STRUCT, 20]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 1: Structural Copper Base Perimeter (84×56mm, 1.4mm Bare Copper)',
+      desc: 'Main desktop footprint bent from a single length of 1.4mm (15–16 AWG) bare copper wire. Includes a raised 8.5mm front arch so a USB-C cable can plug cleanly into the bottom of the ESP32-S3.',
+      net: 'GND',
+      step: 1
+    }, false);
+
+    // Cross-brace at Z = 12 (directly under the ESP32-S3 spine)
+    createCopperRod([
+      [-42, ROD_STRUCT, 12],
+      [-12.7, ROD_STRUCT, 12],
+      [12.7, ROD_STRUCT, 12],
+      [42, ROD_STRUCT, 12]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 1: Front Spine Cross-Brace (GND)',
+      desc: 'Connects left and right base rails at Z=+12mm and anchors the two vertical spine risers.',
+      net: 'GND',
+      step: 1
+    });
+
+    // Twin Circular Copper Cradle Hoops holding the 18650 Battery at X = -22 and X = +22
+    [-22, 22].forEach(xRing => {
+      const ringPts = [];
+      const radius = 9.7;
+      for (let a = 0; a <= 16; a++) {
+        const theta = (a / 16) * Math.PI * 2 - Math.PI / 2;
+        ringPts.push(new THREE.Vector3(xRing, 12.0 + Math.sin(theta) * radius, -24.0 + Math.cos(theta) * radius));
+      }
+      createCopperRod(ringPts, ROD_STRUCT, materials.bareCopper, {
+        title: `Step 1: 18650 Battery Copper Cradle Hoop (X = ${xRing}mm)`,
+        desc: 'Ø19.4mm bare copper loop soldered to the rear base at Y=1.5mm, Z=-24mm to cradle the 18650 battery cylinder.',
+        net: 'GND',
+        step: 1
+      }, false);
+
+      // Base strut connecting ring bottom to front/rear rails
+      createCopperRod([
+        [xRing, ROD_STRUCT, 12],
+        [xRing, ROD_STRUCT, -24],
+        [xRing, 2.3, -24],
+        [xRing, ROD_STRUCT, -24],
+        [xRing, ROD_STRUCT, -36]
+      ], ROD_STRUCT, materials.bareCopper, {
+        title: 'Step 1: Battery Cradle Base Strut (GND)',
+        desc: 'Solders the 18650 cradle hoop onto the front-to-back copper base runner.',
+        net: 'GND',
+        step: 1
+      });
+    });
+
+    // --- STEP 2: CENTRAL VERTICAL SPINE RISERS & ESP32-S3 GND MOUNTING ---
+    // Left GND Spine Pillar: rises from base (-12.7, 0.72, 12) straight into ESP32-S3 Left Pin 22 (GND)
+    createCopperRod([
+      [-12.7, ROD_STRUCT, 12],
+      [P.ESP_GND_L22.x, P.ESP_GND_L22.y - 4.0, 12],
+      P.ESP_GND_L22,
+      [P.ESP_GND_L22.x, P.ESP_GND_L22.y, 6.0]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 2: Left Vertical GND Riser → ESP32-S3 Left Pin #22 (GND)',
+      desc: 'Supports the bottom-left corner of the YD-ESP32-23 board 21mm above the desk and ties Left Pin #22 (GND) to the structural ground frame.',
+      net: 'GND',
+      step: 2
+    });
+
+    // Right Full-Height GND Spine Pillar: rises from base (+12.7, 0.72, 12), passes through Right Pin #22 (GND) & #21 (GND) & #1 (GND) up to top satellite arch!
+    createCopperRod([
+      [12.7, ROD_STRUCT, 12],
+      P.ESP_GND_R22,
+      P.ESP_GND_R21,
+      [12.7, P.ESP_GND_R21.y, 6.0],
+      [12.7, P.ESP_GND_R1.y, 6.0],
+      P.ESP_GND_R1,
+      [12.7, 84.0, 12],
+      [-12.7, 84.0, 12],
+      [-12.7, 70.0, 6.0],
+      [-12.7, P.ESP_GND_L22.y, 6.0]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 2: Main Structural GND Spine & Top Satellite Arch',
+      desc: 'Runs behind the ESP32-S3 at Z=+6mm (6mm clearance behind PCB), soldering directly into Right Pin #1 (GND), Right Pin #21 (GND), Right Pin #22 (GND), and Left Pin #22 (GND).',
+      net: 'GND',
+      step: 2
+    });
+
+    // Diagonal triangulation A-frame struts from rear base to spine (Huy Vector satellite truss style)
+    [-12.7, 12.7].forEach(xSide => {
+      createCopperRod([
+        [xSide, 70.0, 6.0],
+        [xSide, 70.0, -20.0],
+        [xSide * 1.73, ROD_STRUCT, -36.0]
+      ], ROD_STRUCT, materials.bareCopper, {
+        title: 'Step 2: Rear Satellite Truss Strut (GND)',
+        desc: 'Triangulates the vertical spine against the rear base so pressing the front BOOT button feels completely solid.',
+        net: 'GND',
+        step: 2
+      });
+    });
+
+    // --- STEP 3: LEFT WING (I²S MICROPHONE STANDOFF & WIRING) ---
+    // Top copper GND standoff arm extending left from Spine (-12.7, 67.05, 6.0) to bridge Mic L/R and Mic GND!
+    createCopperRod([
+      [-12.7, P.MIC_LR.y, 6.0],
+      [P.MIC_LR.x, P.MIC_LR.y, 6.0],
+      [P.MIC_GND.x, P.MIC_GND.y, 6.0],
+      P.MIC_GND,
+      P.MIC_LR
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 3: Left Wing GND Arm + Mic GND ↔ L/R Bridge',
+      desc: 'Serves two purposes at once: physically suspends the round I²S microphone on the left wing AND bridges Mic GND to Mic L/R (selecting Left channel).',
+      net: 'GND',
+      step: 3
+    });
+
+    // Outer left satellite wing frame loop (aesthetic + protective guard around microphone)
+    createCopperRod([
+      [-12.7, 74.0, 6.0],
+      [-48.0, 74.0, 6.0],
+      [-48.0, 55.0, 6.0],
+      [-12.7, 55.0, 6.0]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 3: Left Satellite Wing Perimeter Guard (GND)',
+      desc: 'Protective copper wing frame surrounding the I²S microphone sensor pod.',
+      net: 'GND',
+      step: 3
+    });
+
+    // Mic VDD -> ESP32-S3 3V3 (Left Pin 1)
+    createCopperRod([
+      P.MIC_VDD,
+      [P.MIC_VDD.x, P.MIC_VDD.y, 15.0],
+      [P.MIC_VDD.x, P.ESP_3V3.y, 15.0],
+      [P.ESP_3V3.x, P.ESP_3V3.y, 15.0],
+      P.ESP_3V3
+    ], ROD_SIGNAL, materials.net_3V3, {
+      title: 'Wire: Microphone VDD → ESP32-S3 3V3 (Left Pin #1)',
+      desc: '3.3V power line (Orange). Steps 3mm forward (Z=+15mm) and runs up to Left Pin #1 (square 3V3 pad). Verify microphone 3.3V rating before powering.',
+      net: '3V3',
+      step: 3
+    });
+
+    // Mic WS -> ESP32-S3 GPIO5 (Left Pin 5) — Direct horizontal line at Y = 64.51mm!
+    createCopperRod([
+      P.MIC_WS,
+      [P.MIC_WS.x, P.MIC_WS.y, 14.5],
+      [P.ESP_GPIO5.x, P.ESP_GPIO5.y, 14.5],
+      P.ESP_GPIO5
+    ], ROD_SIGNAL, materials.net_I2S_WS, {
+      title: 'Wire: Microphone WS → ESP32-S3 GPIO5 (Left Pin #5)',
+      desc: 'I²S Word Select (Purple). Because the microphone is aligned vertically with GPIO5 (Y=64.5mm), this is a straight 20mm horizontal jumper!',
+      net: 'I2S_WS',
+      step: 3
+    });
+
+    // Mic SCK -> ESP32-S3 GPIO4 (Left Pin 4)
+    createCopperRod([
+      P.MIC_SCK,
+      [P.MIC_SCK.x, P.MIC_SCK.y, 9.5],
+      [-23.0, P.MIC_SCK.y, 9.5],
+      [-23.0, P.ESP_GPIO4.y, 9.5],
+      [P.ESP_GPIO4.x, P.ESP_GPIO4.y, 9.5],
+      P.ESP_GPIO4
+    ], ROD_SIGNAL, materials.net_I2S_CLK, {
+      title: 'Wire: Microphone SCK → ESP32-S3 GPIO4 (Left Pin #4)',
+      desc: 'I²S Serial Clock (Blue). Routes cleanly at Z=+9.5mm with 90° bends into Left Pin #4 (GPIO4).',
+      net: 'I2S_CLK',
+      step: 3
+    });
+
+    // Mic SD -> ESP32-S3 GPIO6 (Left Pin 6) — Direct horizontal line at Y = 61.97mm!
+    createCopperRod([
+      P.MIC_SD,
+      [P.MIC_SD.x, P.MIC_SD.y, 16.5],
+      [P.ESP_GPIO6.x, P.ESP_GPIO6.y, 16.5],
+      P.ESP_GPIO6
+    ], ROD_SIGNAL, materials.net_I2S_DATA, {
+      title: 'Wire: Microphone SD → ESP32-S3 GPIO6 (Left Pin #6)',
+      desc: 'I²S Serial Data (Green). Straight horizontal run at Y=62.0mm into Left Pin #6 (GPIO6).',
+      net: 'I2S_DATA',
+      step: 3
+    });
+
+    // --- STEP 4: RIGHT WING (MAX98357A STANDOFF & PARALLEL REAR COPPER BUS) ---
+    // Right Satellite Wing Frame & Amp GND Connection
+    createCopperRod([
+      [12.7, 64.0, 6.0],
+      [50.0, 64.0, 6.0],
+      [50.0, 39.0, 6.0],
+      [12.7, 39.0, 6.0]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 4: Right Satellite Wing Frame (GND)',
+      desc: 'Symmetrical right copper wing supporting the MAX98357A amplifier breakout.',
+      net: 'GND',
+      step: 4
+    });
+
+    // Mechanical standoffs into MAX98357A top & bottom corner mounting holes + electrical GND pin
+    createCopperRod([
+      [P.AMP_MNT_TOP.x, 64.0, 6.0],
+      [P.AMP_MNT_TOP.x, P.AMP_MNT_TOP.y, 6.0],
+      P.AMP_MNT_TOP
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 4: MAX98357A Upper Corner Standoff',
+      desc: 'Solders into the upper isolated mounting ring of the MAX98357A PCB.',
+      net: 'GND',
+      step: 4
+    });
+
+    createCopperRod([
+      [P.AMP_MNT_BOT.x, 39.0, 6.0],
+      [P.AMP_MNT_BOT.x, P.AMP_MNT_BOT.y, 6.0],
+      P.AMP_MNT_BOT
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 4: MAX98357A Lower Corner Standoff',
+      desc: 'Solders into the lower isolated mounting ring of the MAX98357A PCB.',
+      net: 'GND',
+      step: 4
+    });
+
+    // MAX98357A GND pin -> Right Wing Copper GND Frame
+    createCopperRod([
+      P.AMP_GND,
+      [P.AMP_GND.x, P.AMP_GND.y, 6.0],
+      [P.AMP_GND.x, 39.0, 6.0]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Wire: MAX98357A GND → Right Wing Structural Copper GND Frame',
+      desc: 'Short vertical drop tying MAX98357A GND directly to the common copper ground frame.',
+      net: 'GND',
+      step: 4
+    });
+
+    // Parallel Rear Copper Bus Bridge behind ESP32-S3 (Z = +8.8mm, well clear of Z=+12 PCB and Z=+6 GND spine!)
+    // 1. GPIO16 (LRC) -> AMP LRC
+    createCopperRod([
+      P.ESP_GPIO16,
+      [P.ESP_GPIO16.x, P.ESP_GPIO16.y, 8.8],
+      [24.0, P.ESP_GPIO16.y, 8.8],
+      [24.0, P.AMP_LRC.y, 8.8],
+      [P.AMP_LRC.x, P.AMP_LRC.y, 8.8],
+      P.AMP_LRC
+    ], ROD_SIGNAL, materials.net_I2S_WS, {
+      title: 'Wire: ESP32-S3 GPIO16 (Left Pin #9) → MAX98357A LRC',
+      desc: 'I²S Left/Right Clock (Purple). Steps 3.2mm behind the ESP32-S3 PCB (Z=+8.8mm) and runs horizontally across to MAX98357A LRC.',
+      net: 'I2S_WS',
+      step: 4
+    });
+
+    // 2. GPIO15 (BCLK) -> AMP BCLK
+    createCopperRod([
+      P.ESP_GPIO15,
+      [P.ESP_GPIO15.x, P.ESP_GPIO15.y, 9.6],
+      [22.0, P.ESP_GPIO15.y, 9.6],
+      [22.0, P.AMP_BCLK.y, 9.6],
+      [P.AMP_BCLK.x, P.AMP_BCLK.y, 9.6],
+      P.AMP_BCLK
+    ], ROD_SIGNAL, materials.net_I2S_CLK, {
+      title: 'Wire: ESP32-S3 GPIO15 (Left Pin #8) → MAX98357A BCLK',
+      desc: 'I²S Bit Clock (Blue). Runs parallel to LRC & DIN behind the ESP32-S3 at Z=+9.6mm over to MAX98357A BCLK.',
+      net: 'I2S_CLK',
+      step: 4
+    });
+
+    // 3. GPIO17 (DIN) -> AMP DIN
+    createCopperRod([
+      P.ESP_GPIO17,
+      [P.ESP_GPIO17.x, P.ESP_GPIO17.y, 8.0],
+      [26.0, P.ESP_GPIO17.y, 8.0],
+      [26.0, P.AMP_DIN.y, 8.0],
+      [P.AMP_DIN.x, P.AMP_DIN.y, 8.0],
+      P.AMP_DIN
+    ], ROD_SIGNAL, materials.net_I2S_DATA, {
+      title: 'Wire: ESP32-S3 GPIO17 (Left Pin #10) → MAX98357A DIN',
+      desc: 'I²S Audio Data (Green). Runs parallel behind the ESP32-S3 at Z=+8.0mm over to MAX98357A DIN.',
+      net: 'I2S_DATA',
+      step: 4
+    });
+
+    // 4. ESP32-S3 5Vin (Left Pin 21) -> MAX98357A VIN
+    createCopperRod([
+      P.ESP_5VIN,
+      [P.ESP_5VIN.x, P.ESP_5VIN.y, 8.8],
+      [28.0, P.ESP_5VIN.y, 8.8],
+      [28.0, P.AMP_VIN.y, 8.8],
+      [P.AMP_VIN.x, P.AMP_VIN.y, 8.8],
+      P.AMP_VIN
+    ], ROD_SIGNAL, materials.net_5V, {
+      title: 'Wire: ESP32-S3 5Vin (Left Pin #21) ↔ MAX98357A VIN (5V Rail)',
+      desc: '5V Power Bus (Red). Connects the ESP32-S3 5Vin pin across to the MAX98357A VIN pin.',
+      net: '5V',
+      step: 4
+    });
+
+    // --- STEP 5: CENTRAL SPEAKER CRADLE BASKET & SPEAKER WIRES ---
+    // Upper and lower horizontal copper cradle bars holding the 30x40x14mm cavity speaker at Z = -8 to -20
+    [31.3, 72.7].forEach(yBar => {
+      createCopperRod([
+        [-12.7, yBar, 6.0],
+        [-16.0, yBar, -7.5],
+        [-16.0, yBar, -20.5],
+        [16.0, yBar, -20.5],
+        [16.0, yBar, -7.5],
+        [12.7, yBar, 6.0]
+      ], ROD_STRUCT, materials.bareCopper, {
+        title: 'Step 5: Central Speaker Cradle Basket (GND)',
+        desc: 'U-shaped horizontal copper cradle loop that snugly holds the 30×40×14mm cavity speaker behind the ESP32-S3 spine.',
+        net: 'GND',
+        step: 5
+      });
+    });
+
+    // Speaker Red Wire -> MAX98357A SPK+
+    createCopperRod([
+      P.SPK_RED,
+      [24.0, P.SPK_RED.y, P.SPK_RED.z],
+      [42.8, P.AMP_SPK_POS.y, -4.0],
+      [P.AMP_SPK_POS.x, P.AMP_SPK_POS.y, 10.0],
+      P.AMP_SPK_POS
+    ], 0.55, materials.net_SPK_POS, {
+      title: 'Speaker Red Wire → MAX98357A SPK+',
+      desc: 'Positive speaker lead (Red) soldered to the MAX98357A + output pad.',
+      net: 'SPK',
+      step: 5
+    });
+
+    // Speaker Black Wire -> MAX98357A SPK-
+    createCopperRod([
+      P.SPK_BLK,
+      [24.0, P.SPK_BLK.y, P.SPK_BLK.z + 2.0],
+      [42.8, P.AMP_SPK_NEG.y, -2.0],
+      [P.AMP_SPK_NEG.x, P.AMP_SPK_NEG.y, 10.0],
+      P.AMP_SPK_NEG
+    ], 0.55, materials.net_SPK_NEG, {
+      title: 'Speaker Black Wire → MAX98357A SPK− (Differential Output, NOT GND!)',
+      desc: 'Negative speaker lead (Black) soldered ONLY to MAX98357A − output pad. Never touch this wire to the copper GND frame!',
+      net: 'SPK',
+      step: 5
+    });
+
+    // --- STEP 6: 18650 BATTERY & 5V BOOST WIRING ---
+    // 1. 18650 Negative (-33.6, 12.0, -24.0) soldered to Left Rear Copper GND Frame
+    const batNegWire = createCopperRod([
+      [-33.6, 12.0, -24.0],
+      [-42.0, 12.0, -24.0],
+      [-42.0, ROD_STRUCT, -24.0]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 6: 18650 Negative (−) → Structural Copper GND Frame',
+      desc: 'Ties the negative contact plate of the 18650 cell directly to the left rear copper base rail.',
+      net: 'GND',
+      step: 6
+    });
+
+    // 2. 18650 Positive (+34.2, 12.0, -24.0) up into Boost Module B+
+    const batPosWire = createCopperRod([
+      [34.2, 12.0, -24.0],
+      [34.2, 26.0, -24.0],
+      [34.2, 26.0, P.BOOST_BAT_POS.z],
+      P.BOOST_BAT_POS
+    ], ROD_SIGNAL, materials.net_5V, {
+      title: 'Step 6: 18650 Positive (+) → 5V Boost Module B+ (via Switch)',
+      desc: 'Feeds raw 3.7V–4.2V cell voltage into the 5V Boost/Charger module input.',
+      net: '5V',
+      step: 6
+    });
+
+    // 3. Boost GND -> Copper GND Frame
+    const boostGndWire = createCopperRod([
+      P.BOOST_OUT_GND,
+      [-12.7, 26.0, P.BOOST_OUT_GND.z],
+      [-12.7, 26.0, -20.0]
+    ], ROD_STRUCT, materials.bareCopper, {
+      title: 'Step 6: 5V Boost Module GND → Copper GND Frame',
+      desc: 'Ground reference for the 5V Boost/Charger module.',
+      net: 'GND',
+      step: 6
+    });
+
+    // 4. Boost 5V OUT -> ESP32-S3 5Vin / MAX98357A VIN 5V Rail
+    const boost5VWire = createCopperRod([
+      P.BOOST_OUT_5V,
+      [28.0, 26.0, P.BOOST_OUT_5V.z],
+      [28.0, P.ESP_5VIN.y, 8.8]
+    ], ROD_SIGNAL, materials.net_5V, {
+      title: 'Step 6: 5V Boost Output → 5Vin Power Bus (5.0V Regulated)',
+      desc: 'Supplies regulated 5.0V from the 18650 booster to the shared 5Vin / MAX98357A VIN rail.',
+      net: '5V',
+      step: 6
+    });
+
+    const boostRelatedMeshes = [batPosWire, boostGndWire, boost5VWire];
+
+    // ============================================================================
+    // INTERACTIVITY: CAMERA PRESETS, EXPLODE, STEPS, NET HIGHLIGHT, RAYCASTER
+    // ============================================================================
+    const cameraPresets = {
+      iso: { pos: new THREE.Vector3(115, 95, 145), target: new THREE.Vector3(0, 42, 0) },
+      front: { pos: new THREE.Vector3(0, 48, 165), target: new THREE.Vector3(0, 48, 0) },
+      back: { pos: new THREE.Vector3(0, 52, -165), target: new THREE.Vector3(0, 46, 0) },
+      left: { pos: new THREE.Vector3(-145, 62, 35), target: new THREE.Vector3(-18, 56, 6) },
+      right: { pos: new THREE.Vector3(145, 55, 35), target: new THREE.Vector3(18, 50, 6) },
+      top: { pos: new THREE.Vector3(0, 195, 12), target: new THREE.Vector3(0, 40, -6) },
+      battery: { pos: new THREE.Vector3(65, 38, -125), target: new THREE.Vector3(0, 18, -20) }
+    };
+
+    let camAnim = null;
+    function animateCameraTo(presetName) {
+      const p = cameraPresets[presetName];
+      if (!p) return;
+      camAnim = {
+        startPos: camera.position.clone(),
+        endPos: p.pos.clone(),
+        startTarget: controls.target.clone(),
+        endTarget: p.target.clone(),
+        t: 0
+      };
+    }
+
+    document.querySelectorAll('[data-cam]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-cam]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        animateCameraTo(btn.dataset.cam);
+      });
+    });
+
+    // Explode Slider
+    const explodeSlider = document.getElementById('explode-slider');
+    const explodeVal = document.getElementById('explode-val');
+    explodeSlider.addEventListener('input', () => {
+      const ratio = Number(explodeSlider.value) / 100;
+      explodeVal.textContent = `${explodeSlider.value}%`;
+      explodeGroups.forEach(item => {
+        item.group.position.copy(item.basePos).addScaledVector(item.dir, ratio);
+      });
+    });
+
+    // Toggle Buttons
+    let showLabels = true;
+    const btnLabels = document.getElementById('toggle-labels');
+    btnLabels.addEventListener('click', () => {
+      showLabels = !showLabels;
+      btnLabels.classList.toggle('active', showLabels);
+      btnLabels.textContent = `Pin Labels: ${showLabels ? 'ON' : 'OFF'}`;
+      labelsContainer.style.display = showLabels ? 'block' : 'none';
+    });
+
+    let autoSpin = false;
+    const btnRotate = document.getElementById('toggle-rotate');
+    btnRotate.addEventListener('click', () => {
+      autoSpin = !autoSpin;
+      btnRotate.classList.toggle('active', autoSpin);
+      btnRotate.textContent = `Auto-Spin: ${autoSpin ? 'ON' : 'OFF'}`;
+      controls.autoRotate = autoSpin;
+      controls.autoRotateSpeed = 1.6;
+    });
+
+    let showBoost = true;
+    const btnBoost = document.getElementById('toggle-boost');
+    btnBoost.addEventListener('click', () => {
+      showBoost = !showBoost;
+      btnBoost.classList.toggle('active', showBoost);
+      btnBoost.textContent = showBoost ? '18650 + 5V Boost' : 'USB-C Direct Mode';
+      boostGroup.visible = showBoost;
+      boostRelatedMeshes.forEach(m => (m.visible = showBoost));
+    });
+
+    let xrayMode = false;
+    const btnXray = document.getElementById('toggle-xray');
+    btnXray.addEventListener('click', () => {
+      xrayMode = !xrayMode;
+      btnXray.classList.toggle('active', xrayMode);
+      pcbMaterialsList.forEach(mat => {
+        mat.transparent = xrayMode;
+        mat.opacity = xrayMode ? 0.38 : 1.0;
+        mat.needsUpdate = true;
+      });
+    });
+
+    // LED Simulator
+    const ledColors = {
+      green: { hex: 0x22c55e, desc: 'Green = Connected & Ready for Push-to-Talk (Hold BOOT).' },
+      red: { hex: 0xef4444, desc: 'Red = Recording microphone audio over WebSocket.' },
+      amber: { hex: 0xf59e0b, desc: 'Amber = PC Bridge transcribing, Codex working, or synthesizing speech.' },
+      blue: { hex: 0x3b82f6, desc: 'Blue = Playing synthesized spoken reply through MAX98357A & speaker.' },
+      purple: { hex: 0xa855f7, desc: 'Purple = Disconnected or waiting for previous turn interruption.' },
+      white: { hex: 0xffffff, desc: 'White = Codex needs approval (`y`/`n`) or input in the PC terminal.' }
+    };
+
+    document.querySelectorAll('[data-led]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-led]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const info = ledColors[btn.dataset.led];
+        if (info && rgbLedMat) {
+          rgbLedMat.color.setHex(info.hex);
+          rgbLedMat.emissive.setHex(info.hex);
+          showInspector(`RGB Status LED (GPIO48): ${btn.textContent.trim()}`, info.desc, null);
+        }
+      });
+    });
+
+    // Step-by-Step Guide Filtering
+    let currentMaxStep = 0; // 0 = all steps
+    const stepIndicator = document.getElementById('step-indicator');
+    document.querySelectorAll('.step-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+        const step = Number(item.dataset.step);
+        currentMaxStep = step;
+        stepIndicator.textContent = step === 0 ? 'All 6 Steps' : `Up to Step ${step}`;
+
+        for (let s = 1; s <= 6; s++) {
+          const visible = step === 0 || s <= step;
+          stepObjects[s].forEach(mesh => {
+            if (!showBoost && boostRelatedMeshes.includes(mesh)) {
+              mesh.visible = false;
+            } else {
+              mesh.visible = visible;
+            }
+          });
+        }
+        espGroup.visible = step === 0 || step >= 2;
+        micGroup.visible = step === 0 || step >= 3;
+        ampGroup.visible = step === 0 || step >= 4;
+        spkGroup.visible = step === 0 || step >= 5;
+        batGroup.visible = step === 0 || step === 1 || step >= 6;
+        boostGroup.visible = showBoost && (step === 0 || step >= 6);
+
+        const title = item.querySelector('.step-item-header span').textContent;
+        const desc = item.querySelector('.step-item-desc').textContent;
+        showInspector(title, desc, null);
+      });
+    });
+
+    // Net Highlighting
+    let activeNet = null;
+    function highlightNet(netName) {
+      activeNet = netName;
+      document.querySelectorAll('.net-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.net === netName);
+      });
+
+      interactiveMeshes.forEach(mesh => {
+        if (!mesh.material || !mesh.material.color) return;
+        if (!netName) {
+          if (mesh.userData.origEmissive !== undefined) {
+            mesh.material.emissive.setHex(mesh.userData.origEmissive);
+            mesh.material.emissiveIntensity = mesh.userData.origEmissiveIntensity || 0;
+          }
+          return;
+        }
+        if (mesh.userData.origEmissive === undefined && mesh.material.emissive) {
+          mesh.userData.origEmissive = mesh.material.emissive.getHex();
+          mesh.userData.origEmissiveIntensity = mesh.material.emissiveIntensity;
+        }
+        if (mesh.userData.net === netName) {
+          if (mesh.material.emissive) {
+            mesh.material.emissive.copy(mesh.material.color);
+            mesh.material.emissiveIntensity = 0.65;
+          }
+        } else if (mesh.material.emissive && mesh.material !== rgbLedMat) {
+          mesh.material.emissive.setHex(0x000000);
+          mesh.material.emissiveIntensity = 0;
+        }
+      });
+    }
+
+    document.querySelectorAll('.net-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const net = item.dataset.net;
+        if (activeNet === net) {
+          highlightNet(null);
+        } else {
+          highlightNet(net);
+          showInspector(
+            item.querySelector('.net-swatch-wrap span:nth-child(2)').textContent,
+            `Highlighting all copper rods and solder joints on the ${net} net. Click "Show All" or click the net again to reset.`,
+            net
+          );
+        }
+      });
+    });
+
+    document.getElementById('reset-net').addEventListener('click', () => highlightNet(null));
+
+    // Inspector UI Updater
+    const inspTitle = document.getElementById('insp-title');
+    const inspDesc = document.getElementById('insp-desc');
+    function showInspector(title, desc) {
+      inspTitle.textContent = title;
+      inspDesc.textContent = desc;
+    }
+
+    // Raycaster for 3D Hover & Click
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let pointerDownPos = new THREE.Vector2();
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      pointerDownPos.set(e.clientX, e.clientY);
+    });
+
+    renderer.domElement.addEventListener('pointerup', (e) => {
+      if (pointerDownPos.distanceTo(new THREE.Vector2(e.clientX, e.clientY)) > 5) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(interactiveMeshes, false).filter(h => h.object.visible);
+      if (hits.length > 0) {
+        const hit = hits[0].object;
+        if (hit.userData && hit.userData.title) {
+          showInspector(hit.userData.title, hit.userData.desc || '');
+          if (hit.userData.net) {
+            highlightNet(hit.userData.net);
+          }
+        }
+      }
+    });
+
+    // Update 2D Floating Pin Labels in Render Loop with 2D Overlap Avoidance
+    const tempV = new THREE.Vector3();
+    function updatePinLabels() {
+      if (!showLabels) return;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const activeScreenLabels = [];
+
+      pinLabelsData.forEach(item => {
+        const stepVis = currentMaxStep === 0 || !item.step || item.step <= currentMaxStep;
+        if (!stepVis || (!showBoost && item.step === 6 && item.el.textContent === '5V Boost + Switch')) {
+          item.el.style.display = 'none';
+          return;
+        }
+        item.anchor.getWorldPosition(tempV);
+        tempV.project(camera);
+
+        if (tempV.z > 1 || tempV.z < -1) {
+          item.el.style.display = 'none';
+          return;
+        }
+        const x = (tempV.x * 0.5 + 0.5) * w;
+        const y = (-(tempV.y * 0.5) + 0.5) * h;
+
+        activeScreenLabels.push({ item, x, y });
+      });
+
+      // Simple 2-pass relaxation to prevent vertical/horizontal label overlap
+      for (let pass = 0; pass < 3; pass++) {
+        for (let i = 0; i < activeScreenLabels.length; i++) {
+          for (let j = i + 1; j < activeScreenLabels.length; j++) {
+            const a = activeScreenLabels[i];
+            const b = activeScreenLabels[j];
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            if (Math.abs(dx) < 74 && Math.abs(dy) < 20) {
+              const pushY = (20 - Math.abs(dy)) * 0.52 * (dy >= 0 ? 1 : -1);
+              a.y -= pushY;
+              b.y += pushY;
+            }
+          }
+        }
+      }
+
+      activeScreenLabels.forEach(({ item, x, y }) => {
+        if (x < 345 || x > w - 355 || y < 75 || y > h - 40) {
+          item.el.style.opacity = '0.18';
+        } else {
+          item.el.style.opacity = '1';
+        }
+        item.el.style.display = 'block';
+        item.el.style.left = `${x}px`;
+        item.el.style.top = `${y}px`;
+      });
+    }
+
+    // Resize Handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (camAnim) {
+        camAnim.t += 0.06;
+        const k = 1 - Math.pow(1 - Math.min(camAnim.t, 1), 3);
+        camera.position.lerpVectors(camAnim.startPos, camAnim.endPos, k);
+        controls.target.lerpVectors(camAnim.startTarget, camAnim.endTarget, k);
+        if (camAnim.t >= 1) camAnim = null;
+      }
+
+      controls.update();
+      updatePinLabels();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
